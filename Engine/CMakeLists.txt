@@ -12,6 +12,6 @@ add_library(Engine ${ENGINE_HEADERS} ${ENGINE_SOURCES})
 target_link_libraries(Engine PUBLIC sfml-system sfml-network sfml-graphics sfml-window)
 
 install(TARGETS Engine
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION engineLib
+        ARCHIVE DESTINATION engineLib
         )

@@ -6,4 +6,5 @@ project(Pathfinder)
 set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(Engine)
+add_subdirectory(PathfindingSystem)
 add_subdirectory(Game)
