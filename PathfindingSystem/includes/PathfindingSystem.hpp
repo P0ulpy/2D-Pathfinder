@@ -1,7 +1,3 @@
-//
-// Created by Flo on 13/10/2022.
-//
-
 #ifndef PATHFINDER_PATHFINDING_SYSTEM_HPP
 #define PATHFINDER_PATHFINDING_SYSTEM_HPP
 
