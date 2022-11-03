@@ -11,6 +11,8 @@
       <file path="$PROJECT_DIR$/PathfindingSystem/src" />
     </sourceRoots>
     <excludeRoots>
+      <file path="$PROJECT_DIR$/build-debug" />
+      <file path="$PROJECT_DIR$/build-release" />
       <file path="$PROJECT_DIR$/vcpkg" />
       <file path="$PROJECT_DIR$/vcpkg_installed" />
     </excludeRoots>
