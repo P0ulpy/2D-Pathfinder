@@ -2,7 +2,7 @@
 <project version="4">
   <component name="CMakeSharedSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug-VS" ENABLED="true" GENERATION_DIR="out/build-debug" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Visual Studio" GENERATION_OPTIONS="-G &quot;Visual Studio 16 2019&quot;" />
+      <configuration PROFILE_NAME="Debug-VS" ENABLED="true" GENERATION_DIR="cmake-out/build-debug" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Visual Studio" GENERATION_OPTIONS="-G &quot;Visual Studio 16 2019&quot;" />
       <configuration PROFILE_NAME="Release-VS" ENABLED="true" GENERATION_DIR="cmake-out/build-release" CONFIG_NAME="Release" TOOLCHAIN_NAME="Visual Studio" GENERATION_OPTIONS="-G &quot;Visual Studio 16 2019&quot;" />
     </configurations>
   </component>
