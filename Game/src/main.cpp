@@ -1,7 +1,6 @@
-#include <Engine/Engine.hpp>
+#include "Engine/Core/Application/EngineApplication.hpp"
 
 int main()
 {
-    hello();
-    return 0;
+
 }

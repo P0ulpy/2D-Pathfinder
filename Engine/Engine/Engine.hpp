@@ -1,6 +1,10 @@
+//
+// Created by Flo on 26/11/2022.
+//
+
 #ifndef PATHFINDER_ENGINE_HPP
 #define PATHFINDER_ENGINE_HPP
 
-auto hello() -> void;
+#include "Core/Application/EngineApplication.hpp"
 
 #endif //PATHFINDER_ENGINE_HPP
