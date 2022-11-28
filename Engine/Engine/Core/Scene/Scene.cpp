@@ -2,8 +2,8 @@
 // Created by Flo on 25/11/2022.
 //
 
-#include "../../../Engine/Core/Scene/Scene.hpp"
-#include "../../../Engine/EntityComponentSystem/Entity/Entity.hpp"
+#include "Scene.hpp"
+#include "../../EntityComponentSystem/Entity/Entity.hpp"
 
 namespace Engine {
     Entity Scene::CreateEntity(const Core::UUID &uuid)

@@ -2,7 +2,7 @@
 // Created by Flo on 25/11/2022.
 //
 
-#include "../../../Engine/EntityComponentSystem/Entity/Entity.hpp"
+#include "Entity.hpp"
 
 namespace Engine
 {

@@ -2,7 +2,7 @@
 // Created by Flo on 25/11/2022.
 //
 
-#include "../../../Engine/EntityComponentSystem/Component/Component.hpp"
+#include "Component.hpp"
 
 using namespace Engine;
 

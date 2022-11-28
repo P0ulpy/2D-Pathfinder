@@ -1,5 +1,5 @@
-#include "../../../Engine/Core/Application/EngineApplication.hpp"
-#include "../../../Engine/Core/Time.hpp"
+#include "EngineApplication.hpp"
+#include "../Time.hpp"
 
 void Engine::EngineApplication::Run()
 {
@@ -16,14 +16,14 @@ void Engine::EngineApplication::Run()
         // TODO : Add renderer
 
         // TODO : Support ImGui
-        /* UmGui Layer
+#ifdef IMGUI_SUPPORT
         m_imGuiLayer.Begin();
         for(ApplicationLayer* layer : m_layers)
         {
             layer->OnImGuiRender();
         }
         m_imGuiLayer.End();
-        */
+#endif
 
         // TODO : Update Window events
         //m_window->OnUpdate();
