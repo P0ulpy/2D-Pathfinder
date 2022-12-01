@@ -4,7 +4,8 @@
 
 #include "Scene.hpp"
 
-namespace Engine {
+namespace Engine
+{
     Entity Scene::CreateEntity(const EntityHandle &entityHandle)
     {
         Entity entity = { m_registry.CreateEntity(), this };
@@ -13,7 +14,15 @@ namespace Engine {
 
     void Scene::DestroyEntity(Entity entity)
     {
-        m_entityMap.erase(entity.GetHandle());
         m_registry.DestroyEntity(entity.GetHandle());
+    }
+
+    void Scene::OnUpdate(Timestep ts)
+    {
+        // TODO : Update Updatable Entities using registry view
+        /*m_registry.view<IUpdatable>((IUpdatable updatableComponent) ->
+        {
+            updatableComponent.Update(dt);
+        });*/
     }
 } // Engine

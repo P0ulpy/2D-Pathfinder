@@ -16,6 +16,8 @@ namespace Engine::Core
 
         UUID();
     public:
+        static UUID CreateNew();
+
         UUID(std::uint64_t uuid);
         UUID(const UUID&) = default;
 

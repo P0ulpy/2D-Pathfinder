@@ -5,7 +5,8 @@
 #ifndef PATHFINDER_SCENE_HPP
 #define PATHFINDER_SCENE_HPP
 
-#include <unordered_map>
+#include <SFML/Graphics/RenderTarget.hpp>
+
 #include "../Base.hpp"
 #include "../../ECS/EntitiesRegistry/EntitiesRegistry.hpp"
 #include "../../ECS/Entity/Entity.hpp"
@@ -24,6 +25,8 @@ namespace Engine
         void OnUpdate(Timestep ts);
         void OnStop();
 
+        void RenderScene(sf::RenderTarget& renderTarget);
+
         Entity CreateEntity(const EntityHandle& entityHandle);
         void DestroyEntity(Entity entity);
 
@@ -31,7 +34,6 @@ namespace Engine
 
     private:
         EntitiesRegistry m_registry;
-        std::unordered_map<EntityHandle, Entity> m_entityMap;
 
         friend class Entity;
     };

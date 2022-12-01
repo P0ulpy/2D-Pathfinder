@@ -18,7 +18,7 @@ namespace Engine
         virtual void OnAttach() = 0;
         virtual void OnDetach() = 0;
         virtual void OnUpdate(Timestep ts) = 0;
-        virtual void OnImGuiRender() = 0;
+        virtual void OnImGuiRender() { };
 
         [[nodiscard]] const std::string& GetName() const { return m_name; }
     protected:
