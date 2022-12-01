@@ -3,10 +3,9 @@
 //
 
 #include "Scene.hpp"
-#include "../../EntityComponentSystem/Entity/Entity.hpp"
 
 namespace Engine {
-    Entity Scene::CreateEntity(const Core::UUID &uuid)
+    Entity Scene::CreateEntity(const EntityHandle &entityHandle)
     {
         Entity entity = { m_registry.CreateEntity(), this };
         return entity;

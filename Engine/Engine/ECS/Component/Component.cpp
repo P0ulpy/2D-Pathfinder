@@ -6,6 +6,10 @@
 
 using namespace Engine;
 
+Component::Component(ComponentHandle handle)
+    : m_handle(handle)
+{}
+
 void Component::onStart() {}
 void Component::onUpdate(const float &deltaTime) {}
 void Component::onRender() {}

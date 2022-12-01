@@ -14,13 +14,12 @@ namespace Engine::Core
     private:
         std::uint64_t m_UUID;
 
-    public:
         UUID();
+    public:
         UUID(std::uint64_t uuid);
         UUID(const UUID&) = default;
 
         inline operator std::uint64_t() const { return m_UUID; }
-
     };
 }
 

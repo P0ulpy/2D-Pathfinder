@@ -7,7 +7,7 @@
       <file path="$PROJECT_DIR$/Engine/src" />
       <file path="$PROJECT_DIR$/Game/includes" />
       <file path="$PROJECT_DIR$/Game/src" />
-      <file path="$PROJECT_DIR$/PathfindingSystem/includes" />
+      <file path="$PROJECT_DIR$/PathfindingSystem/PathfindingSystem" />
       <file path="$PROJECT_DIR$/PathfindingSystem/src" />
     </sourceRoots>
     <excludeRoots>

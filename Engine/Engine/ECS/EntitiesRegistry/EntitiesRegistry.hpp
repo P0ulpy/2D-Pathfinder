@@ -5,18 +5,18 @@
 #ifndef PATHFINDER_ENTITIESREGISTRY_HPP
 #define PATHFINDER_ENTITIESREGISTRY_HPP
 
-#include "../../Core/UUID.hpp"
+#include "../Entity/Entity.hpp"
 
-namespace Engine {
-
+namespace Engine
+{
     /* Entities registry is the core storage of our ESC system
      * it manages Components allocation & association with an Entity
      * */
     class EntitiesRegistry
     {
     public:
-        Core::UUID CreateEntity();
-        void DestroyEntity(Core::UUID uuid);
+        EntityHandle CreateEntity();
+        void DestroyEntity(EntityHandle uuid);
     };
 
 } // Engine

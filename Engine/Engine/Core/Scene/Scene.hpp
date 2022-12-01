@@ -7,8 +7,8 @@
 
 #include <unordered_map>
 #include "../Base.hpp"
-#include "../UUID.hpp"
-#include "../../EntityComponentSystem/EntitiesRegistry/EntitiesRegistry.hpp"
+#include "../../ECS/EntitiesRegistry/EntitiesRegistry.hpp"
+#include "../../ECS/Entity/Entity.hpp"
 
 namespace Engine
 {
@@ -24,14 +24,14 @@ namespace Engine
         void OnUpdate(Timestep ts);
         void OnStop();
 
-        Entity CreateEntity(const Core::UUID& uuid);
+        Entity CreateEntity(const EntityHandle& entityHandle);
         void DestroyEntity(Entity entity);
 
         Entity GetEntityByUUID(const Core::UUID& uuid);
 
     private:
         EntitiesRegistry m_registry;
-        std::unordered_map<Core::UUID, Entity> m_entityMap;
+        std::unordered_map<EntityHandle, Entity> m_entityMap;
 
         friend class Entity;
     };
