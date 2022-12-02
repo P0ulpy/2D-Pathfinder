@@ -14,7 +14,7 @@ namespace Engine
     void SceneLayer::OnUpdate(Timestep ts)
     {
         m_scene.OnUpdate(ts);
-        m_scene.RenderScene(m_renderTarget);
+        m_scene.RenderScene(*m_renderTarget);
     }
 
 } // Engine

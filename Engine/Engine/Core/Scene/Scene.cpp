@@ -6,7 +6,7 @@
 
 namespace Engine
 {
-    Entity Scene::CreateEntity(const EntityHandle &entityHandle)
+    Entity Scene::CreateEntity()
     {
         Entity entity = { m_registry.CreateEntity(), this };
         return entity;

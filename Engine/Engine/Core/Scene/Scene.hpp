@@ -27,10 +27,10 @@ namespace Engine
 
         void RenderScene(sf::RenderTarget& renderTarget);
 
-        Entity CreateEntity(const EntityHandle& entityHandle);
+        Entity CreateEntity();
         void DestroyEntity(Entity entity);
 
-        Entity GetEntityByUUID(const Core::UUID& uuid);
+        Entity GetEntityByHandle(const EntityHandle& handle);
 
     private:
         EntitiesRegistry m_registry;

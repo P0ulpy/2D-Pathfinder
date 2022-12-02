@@ -12,11 +12,12 @@ namespace Engine::Core
     class UUID
     {
     private:
-        std::uint64_t m_UUID;
+        std::uint64_t m_UUID = 0;
 
         UUID();
     public:
         static UUID CreateNew();
+        static const UUID Null;
 
         UUID(std::uint64_t uuid);
         UUID(const UUID&) = default;

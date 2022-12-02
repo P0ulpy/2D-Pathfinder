@@ -24,9 +24,12 @@ namespace Engine
         virtual void onDestroy();
 
     private:
-        ComponentHandle m_handle;
+        ComponentHandle m_handle = ComponentHandle::Null;
 
         friend class EntitiesRegistry;
+
+        template <typename TComponent>
+        friend class ComponentSystem;
     };
 
 } // Engine
