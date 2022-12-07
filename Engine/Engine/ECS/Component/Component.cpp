@@ -12,9 +12,10 @@ namespace Engine
         : m_handle(handle)
     {}
 
-    void Component::onStart() {}
-    void Component::onUpdate(const float &deltaTime) {}
-    void Component::onRender() {}
-    void Component::onImGuiRender() {}
-    void Component::onDestroy() {}
+    void Component::OnAwake() {}
+    void Component::OnStart() {}
+    void Component::OnUpdate(const float &deltaTime) {}
+    void Component::OnRender() {}
+    void Component::OnImGuiRender() {}
+    void Component::OnDestroy() {}
 }

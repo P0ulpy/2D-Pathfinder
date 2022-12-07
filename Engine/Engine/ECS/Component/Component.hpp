@@ -15,13 +15,15 @@ namespace Engine
     {
     protected:
         Component() = default;
-        Component(ComponentHandle handle);
+        virtual ~Component() = default;
+
     public:
-        virtual void onStart();
-        virtual void onUpdate(const float& deltaTime);
-        virtual void onRender();
-        virtual void onImGuiRender();
-        virtual void onDestroy();
+        virtual void OnAwake();
+        virtual void OnStart();
+        virtual void OnUpdate(const float& deltaTime);
+        virtual void OnRender();
+        virtual void OnImGuiRender();
+        virtual void OnDestroy();
 
     private:
         ComponentHandle m_handle = ComponentHandle::Null;

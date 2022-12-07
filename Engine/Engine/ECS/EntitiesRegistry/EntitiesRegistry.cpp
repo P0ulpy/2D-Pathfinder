@@ -38,4 +38,11 @@ namespace Engine
         return GetSystem<T>()
                 .Remove(entityHandle);
     }
+
+    template<typename T>
+    void EntitiesRegistry::View(ComponentSystem<T>::ViewCallback callback)
+    {
+        GetSystem<T>().View(callback);
+    }
+
 } // Engine
