@@ -1,4 +1,5 @@
-#include "Engine/Core/Application/EngineApplication.hpp"
+#include <Engine/Engine.hpp>
+#include <PathfindingSystem/PathfindingSystem.hpp>
 
 int main()
 {

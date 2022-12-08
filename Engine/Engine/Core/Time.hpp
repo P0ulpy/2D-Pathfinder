@@ -11,7 +11,7 @@ namespace Engine
 
     struct Time
     {
-        static float GetTime();
+        static Timestep GetTime();
     };
 }
 

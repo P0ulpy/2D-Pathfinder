@@ -15,10 +15,10 @@ namespace Engine
         explicit ApplicationLayer(const std::string_view& name = "Layer");
         virtual ~ApplicationLayer() = default;
 
-        virtual void OnAttach() {}
-        virtual void OnDetach() {}
-        virtual void OnUpdate(Timestep ts) {}
-        virtual void OnImGuiRender() {}
+        virtual void OnAttach() = 0;
+        virtual void OnDetach() = 0;
+        virtual void OnUpdate(Timestep ts) = 0;
+        virtual void OnImGuiRender() { };
 
         [[nodiscard]] const std::string& GetName() const { return m_name; }
     protected:

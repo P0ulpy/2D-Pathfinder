@@ -5,6 +5,8 @@
 #ifndef PATHFINDER_ENGINE_HPP
 #define PATHFINDER_ENGINE_HPP
 
+// #define IMGUI_SUPPORT
+
 #include "Core/Application/EngineApplication.hpp"
 
 #endif //PATHFINDER_ENGINE_HPP

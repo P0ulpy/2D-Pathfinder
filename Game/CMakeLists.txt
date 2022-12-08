@@ -7,7 +7,12 @@ set(GAME_SOURCES
         )
 
 add_executable(Game ${GAME_HEADERS} ${GAME_SOURCES})
+
 include_directories(${CMAKE_SOURCE_DIR}/Engine)
-target_link_libraries(Game Engine PathfindingSystem)
+include_directories(${CMAKE_SOURCE_DIR}/PathfindingSystem)
+
+target_link_libraries(Game
+        PRIVATE Engine
+        PRIVATE PathfindingSystem)
 
 install(TARGETS Game RUNTIME DESTINATION bin)

@@ -7,22 +7,26 @@
 
 #include "../../Core/UUID.hpp"
 
-namespace Engine {
-
+namespace Engine
+{
     class Scene;
+
+    using EntityHandle = Core::UUID;
 
     class Entity
     {
-    public:
+    protected:
         Entity() = default;
-        Entity(Core::UUID handle, Scene* scene);
+        Entity(EntityHandle handle, Scene* scene);
+
+    public:
         Entity(const Entity& other) = default;
 
-        template<typename T, typename... Args>
-        T& AddComponent(Args&&... args);
+        template<typename T>
+        T* AddComponent();
 
         template<typename T>
-        T& GetComponent();
+        T* GetComponent();
 
         template<typename T>
         bool HasComponent();
@@ -30,11 +34,14 @@ namespace Engine {
         template<typename T>
         void RemoveComponent();
 
-        [[nodiscard]] inline Core::UUID GetHandle() const { return m_handle; }
+        [[nodiscard]] inline EntityHandle GetHandle() const { return m_handle; }
 
     private:
-        Core::UUID m_handle;
+        EntityHandle m_handle = EntityHandle::Null;
         Scene* m_Scene = nullptr;
+
+        friend class EntitiesRegistry;
+        friend class Scene;
     };
 
 } // Engine
