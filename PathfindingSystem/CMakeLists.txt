@@ -1,5 +1,6 @@
 set(PATHFINDING_SYSTEM_HEADERS
         PathfindingSystem/PathfindingSystem.hpp
+        src/BFS/BFSUtils.h
         )
 
 set(PATHFINDING_SYSTEM_SOURCES

@@ -62,14 +62,22 @@ public:
 		if (IsAlreadyNeighbor(*pNode))
 			return;
 
-		assert(!IsAlreadyNeighbor(*pNode) && "Neighbour already added");
+		// assert(!IsAlreadyNeighbor(*pNode) && "Neighbour already added");
 
 		_neighbors.push_back(std::move(pNode));
 		if constexpr (sizeof...(args) > 0)
 			AddNeighbors(args...);
 	}
 
-	void RemoveAllNeighbors()
+	void RemoveNeighbor(NodeSharedPtr<T> neighborToRemove)
+	{
+		_neighbors.remove_if([&neighborToRemove, this](const auto currNeighbor)
+		{
+			return neighborToRemove->_content == currNeighbor->_content && neighborToRemove->IsAlreadyNeighbor(*this);
+		});
+	}
+
+	void ClearAllNeighbors()
 	{
 		_neighbors.clear();
 	}
@@ -108,12 +116,12 @@ public:
 
 private:
 
-	bool IsAlreadyNeighbor(const TNode& node) const
+	bool IsAlreadyNeighbor(const TNode& nodeNeighborToFind) const
 	{
-		const auto it = std::find_if(_neighbors.begin(), _neighbors.end(), [&node](const auto pNeighbor)
-			{
-				return node._content == pNeighbor->_content;
-			});
+		const auto it = std::find_if(_neighbors.begin(), _neighbors.end(), [&nodeNeighborToFind](const auto pNeighbor)
+		{
+			return nodeNeighborToFind._content == pNeighbor->_content;
+		});
 
 		return it != _neighbors.end();
 	}
@@ -139,12 +147,26 @@ template<typename T>
 class TGraph : public std::vector<NodeSharedPtr<T>>
 {
 public:
+	static constexpr int MAP_WIDTH = 12;
+	static constexpr int MAP_HEIGHT = 7;
+
 	TGraph() = default;
 
 	TGraph(std::initializer_list<TNode<T>> init)
 	{
 		for (auto element : init)
 			AddNodes(element);
+	}
+
+	// You can initialize a graph with array
+	TGraph(const T(&arr)[MAP_HEIGHT][MAP_WIDTH])
+	{
+		for (size_t l = 0; l < MAP_HEIGHT; l++)
+		{
+			for (size_t c = 0; c < MAP_WIDTH; c++) {
+				AddNodes(arr[l][c]);
+			}
+		}
 	}
 
 	~TGraph() = default;
@@ -165,6 +187,26 @@ public:
 		pRhs->AddNeighbors(pLhs);
 	}
 
+	void RemoveEdge(const TNode<T>& lhs, const TNode<T>& rhs)
+	{
+		auto pLhs = FindNode(lhs);
+		auto pRhs = FindNode(rhs);
+		pLhs->RemoveNeighbor(pRhs);
+		pRhs->RemoveNeighbor(pLhs);
+	}
+
+	void RemoveAllEdges(const TNode<T>& node)
+	{
+		auto pNode = FindNode(node);
+
+		for (const auto& neighbor : pNode->GetNeighbors())
+		{
+			neighbor->RemoveNeighbor(pNode);
+		}
+
+		pNode->ClearAllNeighbors();
+	}
+
 	NodeSharedPtr<T> FindNode(const TNode<T>& node)
 	{
 		const auto it = std::find_if(this->begin(), this->end(), [&node](const auto& pNode)
@@ -178,10 +220,10 @@ public:
 
 	NodeSharedPtr<T> FindNode(const T& nodeContent)
 	{
-		const auto it = std::find_if(this->begin(), this->end(), [](const auto& pNode)
-			{
-				return pNode->GetContent() == nodeContent;
-			});
+		const auto it = std::find_if(this->begin(), this->end(), [&nodeContent](const auto& pNode)
+		{
+			return pNode->GetContent() == nodeContent;
+		});
 
 		assert(it != this->end() && "The node is not present in the graph.");
 		return (*it);
