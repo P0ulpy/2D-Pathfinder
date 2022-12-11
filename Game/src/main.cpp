@@ -1,6 +1,7 @@
 #include <Engine/Engine.hpp>
 #include <PathfindingSystem/PathfindingSystem.hpp>
 
+#include "src/BFS/TGraph.h"
 #include "src/BFS/TNode.h"
 #include "src/BFS/BFSUtils.h"
 
