@@ -9,7 +9,9 @@ set(ENGINE_HEADERS
         Engine/Core/Application/ApplicationLayer.hpp
         Engine/Core/Time.hpp
         Engine/Core/Application/LayerStack.hpp
-        Engine/Core/Logger/Logger.hpp Engine/Core/Application/SceneLayer.cpp Engine/Core/Application/SceneLayer.hpp Engine/Core/Logger/ConsoleColor.hpp)
+        Engine/Core/Logger/Logger.hpp 
+        Engine/Core/Application/SceneLayer.hpp 
+        Engine/Core/Logger/ConsoleColor.hpp)
 
 set(ENGINE_SOURCES
         Engine/Core/Application/EngineApplication.cpp
@@ -19,7 +21,8 @@ set(ENGINE_SOURCES
         Engine/Core/UUID.cpp
         Engine/ECS/EntitiesRegistry/EntitiesRegistry.cpp
         Engine/Core/Application/ApplicationLayer.cpp
-        Engine/Core/Logger/Logger.cpp Engine/Core/Application/SceneLayer.cpp Engine/Core/Application/SceneLayer.hpp Engine/Core/Logger/ConsoleColor.hpp)
+        Engine/Core/Logger/Logger.cpp 
+        Engine/Core/Application/SceneLayer.cpp)
 
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 

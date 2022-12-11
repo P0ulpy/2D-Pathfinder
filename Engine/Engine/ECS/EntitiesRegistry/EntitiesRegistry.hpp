@@ -7,7 +7,7 @@
 
 #include "../Entity/Entity.hpp"
 #include "../Component/Component.hpp"
-#include "../../Core/Log/Logger.hpp"
+#include "../../Core/Logger/Logger.hpp"
 
 #include <unordered_map>
 #include <stack>
