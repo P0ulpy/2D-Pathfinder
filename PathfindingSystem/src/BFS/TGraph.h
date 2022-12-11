@@ -17,7 +17,7 @@ template<typename T>
 using NodePtr = TNode<T>*;
 
 template<typename T>
-class TGraph : public std::vector<NodeSharedPtr<T>>
+class TGraph : public std::list<NodeSharedPtr<T>>
 {
 public:
 	static constexpr int MAP_WIDTH = 12;

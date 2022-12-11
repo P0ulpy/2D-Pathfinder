@@ -11,6 +11,14 @@ struct Tile2D
     sf::Vector2i _pos{ 0, 0 };
     bool _isWall{ false }; // Could be replaced by an int _weight
 
+    /* distance from the starting node to a given node */
+    double g;
+    /* distance from a given node to the final node */
+    double h;
+
+    void SetG(const double value) { g = value; }
+    void SetH(const double value) { h = value; }
+
     bool operator==(const Tile2D& tile) const
     {
         return _pos == tile._pos;
@@ -21,6 +29,9 @@ struct Tile2D
         os << tile._pos.x << "_" << tile._pos.y;
         return os;
     }
+
+    /* G + H, sum of the two distances */
+    double GetF() const { return g + h; };
 };
 
 struct LoggerNodes
