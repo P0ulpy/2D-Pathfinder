@@ -20,9 +20,7 @@ int main()
         { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 } // Finishes at bottom-right
     };
 
-    LoggerNodes loggerNodes;
-
-    // =========== Construct node map
+    // =========== Construct default node map
     using NodeTile2D = TNode<Tile2D>;
 
     Tile2D tileMap2D[MAP_HEIGHT][MAP_WIDTH];
@@ -63,7 +61,7 @@ int main()
     g.AddEdge(tileMap2D[0][2], tileMap2D[6][8]);
 
     // Remove the portal
-    //g.RemoveEdge(tileMap2D[0][2], tileMap2D[6][8]);
+    g.RemoveEdge(tileMap2D[0][2], tileMap2D[6][8]);
 
     g.RemoveAllEdges(tileMap2D[6][10]); // Adding a wall
 
@@ -73,9 +71,11 @@ int main()
 
     queueNodesVisited.push(g.FindNode(tileMap2D[0][0]));
 
-    queueNodesVisited.back()->SetIsVisitedBy(queueNodesVisited.back());
+    queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
 
     // ---- BFS, display result
+    LoggerNodes loggerNodes;
+
     g.TraversalGraphRecursifBreathFirst(g.FindNode(tileMap2D[MAP_HEIGHT - 1][MAP_WIDTH - 1]), queueNodesVisited, loggerNodes);
 
     g.VisitParentsFrom(g.FindNode(tileMap2D[MAP_HEIGHT - 1][MAP_WIDTH - 1]), loggerNodes);

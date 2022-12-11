@@ -100,7 +100,7 @@ struct LoggerNodes
     template <typename T>
     void Visit(NodeSharedPtr<T> pSharedNode)
     {
-        WeakSharedPtr<T> pWeakNode(pSharedNode);
+        NodeWeakPtr<T> pWeakNode(pSharedNode);
 
         std::cout << pWeakNode.lock()->GetContent() << " ---> ";
     }

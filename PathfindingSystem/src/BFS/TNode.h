@@ -21,7 +21,7 @@ public:
 	TNode() : TNode(T())
 	{ }
 
-	TNode(const T& content/* = T()*/)
+	TNode(const T& content/* = T()*/) // Can't make the difference between default contructor and copyuconstructor with T() as default parameter
 		: _content(content)
 	{
 
@@ -102,7 +102,7 @@ public:
 		return _neighbors;
 	}
 
-	void SetIsVisitedBy(const std::shared_ptr<TNode<T>>& parent)
+	void SetIsVisitedByParent(const std::shared_ptr<TNode<T>>& parent)
 	{
 		if (_parent == nullptr)
 		{
@@ -110,9 +110,9 @@ public:
 		}
 	}
 
-	bool IsVisited() const { return _parent != nullptr; }
-
+	bool IsVisitedByParent() const { return _parent != nullptr; }
 	NodeSharedPtr<T> GetParent() const { return _parent; }
+	void ResetParent() { _parent.reset(); }
 
 private:
 
@@ -138,7 +138,7 @@ template<typename T>
 using NodeSharedPtr = std::shared_ptr<TNode<T>>;
 
 template<typename T>
-using WeakSharedPtr = std::weak_ptr<TNode<T>>;
+using NodeWeakPtr = std::weak_ptr<TNode<T>>;
 
 template<typename T>
 using NodePtr = TNode<T>*;
@@ -207,19 +207,9 @@ public:
 		pNode->ClearAllNeighbors();
 	}
 
-	NodeSharedPtr<T> FindNode(const TNode<T>& node)
-	{
-		const auto it = std::find_if(this->begin(), this->end(), [&node](const auto& pNode)
-			{
-				return pNode->HasSameContent(node);
-			});
-
-		assert(it != this->end() && "The node is not present in the graph.");
-		return (*it);
-	}
-
 	NodeSharedPtr<T> FindNode(const T& nodeContent)
 	{
+		// Find in the vector if the node is contained
 		const auto it = std::find_if(this->begin(), this->end(), [&nodeContent](const auto& pNode)
 		{
 			return pNode->GetContent() == nodeContent;
@@ -227,6 +217,11 @@ public:
 
 		assert(it != this->end() && "The node is not present in the graph.");
 		return (*it);
+	}
+
+	NodeSharedPtr<T> FindNode(const TNode<T>& node)
+	{
+		return FindNode(node.GetContent());
 	}
 
 	template <typename Callable>
@@ -256,9 +251,9 @@ public:
 
 			for (const auto& neighbor : currentNode->GetNeighbors())
 			{
-				if (!neighbor->IsVisited())
+				if (!neighbor->IsVisitedByParent())
 				{
-					neighbor->SetIsVisitedBy(currentNode); // Put currentNode as parent ref of neighbor
+					neighbor->SetIsVisitedByParent(currentNode); // Put currentNode as parent ref of neighbor
 					queueNodesToVisit.push(neighbor);
 				}
 			}
