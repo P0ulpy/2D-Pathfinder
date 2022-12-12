@@ -66,6 +66,14 @@ public:
 		pNode->ClearAllNeighbors();
 	}
 
+	void ResetParentsForAllNodes()
+	{
+		std::for_each(this->begin(), this->end(), [](const auto& node)
+			{
+				node->ResetParent();
+			});
+	}
+
 	NodeSharedPtr<T> FindNode(const T& nodeContent)
 	{
 		// Find in the vector if the node is contained

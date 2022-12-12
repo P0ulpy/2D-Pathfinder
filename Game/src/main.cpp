@@ -102,6 +102,8 @@ int main()
     g.VisitParentsFrom(endNode, loggerNodes);
 
     // --- Run AStar
+    g.ResetParentsForAllNodes();
+
     std::cout << std::endl;
     std::cout << "AStar: " << std::endl;
 
