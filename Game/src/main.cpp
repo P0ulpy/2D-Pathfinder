@@ -56,7 +56,7 @@ int main()
         for (int c = 0; c < MAP_WIDTH; ++c)
         {
             if (!tileMap2D[l][c]._isTraversable)
-                continue; // Walls have no neighbors
+                continue; // Not traversable -> no neighbors
 
             if (c - 1 > 0 && tileMap2D[l][c - 1]._isTraversable)
                 g.AddEdge(tileMap2D[l][c], tileMap2D[l][c - 1]);
@@ -86,14 +86,14 @@ int main()
     const auto endNode = g.FindNode(Tile2D(MAP_HEIGHT - 1, MAP_WIDTH - 1));
 
     // ---- BFS
-    auto queueNodesVisited = std::queue<std::shared_ptr<NodeTile2D>>();
+    std::cout << std::endl;
+    std::cout << "BFS: " << std::endl;
+
+	auto queueNodesVisited = std::queue<std::shared_ptr<NodeTile2D>>();
     queueNodesVisited.push(beginNode);
     queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
 
     LoggerNodes loggerNodes;
-
-    std::cout << std::endl;
-    std::cout << "BFS: " << std::endl;
 
     const auto startTimer1 = std::chrono::high_resolution_clock::now();
     g.TraversalGraphRecursifBreathFirst(endNode, queueNodesVisited, loggerNodes);
@@ -101,10 +101,10 @@ int main()
 
     g.VisitParentsFrom(endNode, loggerNodes);
 
+    // --- Run AStar
     std::cout << std::endl;
     std::cout << "AStar: " << std::endl;
 
-    // --- Run AStar
     const auto startTimer2 = std::chrono::high_resolution_clock::now();
     const auto aStarResult = AStar::RunAStar(beginNode, endNode);
     const auto endTimer2 = std::chrono::high_resolution_clock::now();
@@ -116,6 +116,7 @@ int main()
     //    std::cout << node->GetContent() << " ---> ";
     //}
 
+    // Display timers result
     const auto durationTimer1 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer1 - startTimer1).count();
     const auto durationTimer2 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer2 - startTimer2).count();
 

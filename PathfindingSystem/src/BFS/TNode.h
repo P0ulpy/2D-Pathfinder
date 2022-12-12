@@ -17,7 +17,7 @@ public:
 	TNode() : TNode(T())
 	{ }
 
-	TNode(const T& content/* = T()*/) // Can't make the difference between default contructor and copyuconstructor with T() as default parameter
+	TNode(const T& content/* = T()*/) // Can't make the difference between default contructor and copy constructor with T() as default parameter
 		: _content(content)
 	{
 
@@ -58,7 +58,7 @@ public:
 		if (IsAlreadyNeighbor(*pNode))
 			return;
 
-		// assert(!IsAlreadyNeighbor(*pNode) && "Neighbour already added");
+		assert(!IsAlreadyNeighbor(*pNode) && "Neighbour already added");
 
 		_neighbors.push_back(std::move(pNode));
 		if constexpr (sizeof...(args) > 0)
