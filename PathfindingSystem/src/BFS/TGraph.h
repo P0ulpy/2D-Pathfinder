@@ -20,26 +20,12 @@ template<typename T>
 class TGraph : public std::list<NodeSharedPtr<T>>
 {
 public:
-	static constexpr int MAP_WIDTH = 12;
-	static constexpr int MAP_HEIGHT = 7;
-
 	TGraph() = default;
 
 	TGraph(std::initializer_list<TNode<T>> init)
 	{
 		for (auto element : init)
 			AddNodes(element);
-	}
-
-	// You can initialize a graph with array
-	TGraph(const T(&arr)[MAP_HEIGHT][MAP_WIDTH])
-	{
-		for (size_t l = 0; l < MAP_HEIGHT; l++)
-		{
-			for (size_t c = 0; c < MAP_WIDTH; c++) {
-				AddNodes(arr[l][c]);
-			}
-		}
 	}
 
 	~TGraph() = default;
@@ -114,7 +100,7 @@ public:
 	{
 		if (!queueNodesToVisit.empty())
 		{
-			auto currentNode = queueNodesToVisit.front(); // Copy of pointer
+			auto currentNode = queueNodesToVisit.front();
 			//Functor.Visit(currentNode);
 
 			if (currentNode == goalNode)

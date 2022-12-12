@@ -5,16 +5,16 @@
 struct Tile2D
 {
     Tile2D() = default;
-    Tile2D(int x, int y, bool isWall = false) : _pos(x, y), _isWall(isWall) {}
-    Tile2D(const sf::Vector2i point, bool isWall = false) : _pos(point.x, point.y), _isWall(isWall) {}
+    Tile2D(int x, int y, bool isTraversable = true) : _pos(x, y), _isTraversable(isTraversable) {}
+    Tile2D(const sf::Vector2i point, bool isWall = true) : _pos(point.x, point.y), _isTraversable(isWall) {}
 
     sf::Vector2i _pos{ 0, 0 };
-    bool _isWall{ false }; // Could be replaced by an int _weight
+    bool _isTraversable{ false }; // Could be replaced by an int _weight
 
     /* distance from the starting node to a given node */
-    double g;
+    double g { 0 };
     /* distance from a given node to the final node */
-    double h;
+    double h { 0 };
 
     void SetG(const double value) { g = value; }
     void SetH(const double value) { h = value; }
