@@ -23,7 +23,7 @@
 
 int main()
 {
-    static constexpr int MAP_WIDTH = 80;
+    static constexpr int MAP_WIDTH = 30;
     static constexpr int MAP_HEIGHT = 30;
 
     // =========== Construct default node map
@@ -38,61 +38,62 @@ int main()
     {
         for (int c = 0; c < MAP_WIDTH; ++c)
         {
-            const auto isWall = !static_cast<bool>(std::rand() % 7);
-            tileMap2D[l][c] = Tile2D(c, l, isWall);
+            const auto isTraversable = static_cast<bool>(std::rand() % 7);
+            tileMap2D[l][c] = Tile2D(c, l, isTraversable);
 
-            std::cout << (isWall ? "X " : " "); // Just to see the map
+            std::cout << (!isTraversable ? "X " : " "); // Just to see the map
 
             g.AddNodes(tileMap2D[l][c]);
         }
         std::cout << std::endl;
     }
 
-    tileMap2D[0][0]._isWall = false;
-    tileMap2D[MAP_HEIGHT - 1][MAP_WIDTH - 1]._isWall = false;
+    tileMap2D[0][0]._isTraversable = true;
+    tileMap2D[MAP_HEIGHT - 1][MAP_WIDTH - 1]._isTraversable = true;
 
     for (int l = 0; l < MAP_HEIGHT; ++l)
     {
         for (int c = 0; c < MAP_WIDTH; ++c)
         {
-            if (tileMap2D[l][c]._isWall)
-                continue; // Walls have no neighbors
+            if (!tileMap2D[l][c]._isTraversable)
+                continue; // Not traversable -> no neighbors
 
-            if (c - 1 > 0 && !(tileMap2D[l][c - 1]._isWall))
+            if (c - 1 > 0 && tileMap2D[l][c - 1]._isTraversable)
                 g.AddEdge(tileMap2D[l][c], tileMap2D[l][c - 1]);
 
-            if (l - 1 > 0 && !(tileMap2D[l - 1][c]._isWall))
+            if (l - 1 > 0 && tileMap2D[l - 1][c]._isTraversable)
                 g.AddEdge(tileMap2D[l][c], tileMap2D[l - 1][c]);
 
-            if (c + 1 < MAP_WIDTH && !(tileMap2D[l][c + 1]._isWall))
+            if (c + 1 < MAP_WIDTH && tileMap2D[l][c + 1]._isTraversable)
                 g.AddEdge(tileMap2D[l][c], tileMap2D[l][c + 1]);
             
-            if (l + 1 < MAP_HEIGHT && !(tileMap2D[l + 1][c]._isWall))
+            if (l + 1 < MAP_HEIGHT && tileMap2D[l + 1][c]._isTraversable)
                 g.AddEdge(tileMap2D[l][c], tileMap2D[l + 1][c]);
         }
     }
 
     // Just adding a portal
-    g.AddEdge(tileMap2D[0][2], tileMap2D[6][8]);
+    g.AddEdge(Tile2D(0, 2), Tile2D(6, 8));
 
     // Remove the portal
-    g.RemoveEdge(tileMap2D[0][2], tileMap2D[6][8]);
+    g.RemoveEdge(Tile2D(0, 2), Tile2D(6, 8));
 
-    // g.RemoveAllEdges(tileMap2D[6][10]); // Adding a wall
+    // Adding a wall
+    g.RemoveAllEdges(Tile2D(6, 10));
 
     // ----- Init
-    const auto beginNode = g.FindNode(tileMap2D[0][0]);
-    const auto endNode = g.FindNode(tileMap2D[MAP_HEIGHT - 1][MAP_WIDTH - 1]);
+    const auto beginNode = g.FindNode(Tile2D(0,0));
+    const auto endNode = g.FindNode(Tile2D(MAP_HEIGHT - 1, MAP_WIDTH - 1));
 
     // ---- BFS
-    auto queueNodesVisited = std::queue<std::shared_ptr<NodeTile2D>>();
+    std::cout << std::endl;
+    std::cout << "BFS: " << std::endl;
+
+	auto queueNodesVisited = std::queue<std::shared_ptr<NodeTile2D>>();
     queueNodesVisited.push(beginNode);
     queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
 
     LoggerNodes loggerNodes;
-
-    std::cout << std::endl;
-    std::cout << "BFS: " << std::endl;
 
     const auto startTimer1 = std::chrono::high_resolution_clock::now();
     g.TraversalGraphRecursifBreathFirst(endNode, queueNodesVisited, loggerNodes);
@@ -100,27 +101,28 @@ int main()
 
     g.VisitParentsFrom(endNode, loggerNodes);
 
+    // --- Run AStar
+    g.ResetParentsForAllNodes();
+
     std::cout << std::endl;
     std::cout << "AStar: " << std::endl;
 
-    // --- Run AStar
-    constexpr AStar aStar;
-
     const auto startTimer2 = std::chrono::high_resolution_clock::now();
-    const auto aStarResult = aStar.RunAStar(beginNode, endNode);
+    const auto aStarResult = AStar::RunAStar(beginNode, endNode);
     const auto endTimer2 = std::chrono::high_resolution_clock::now();
 
-    //g.VisitParentsFrom(endNode, loggerNodes);
+    g.VisitParentsFrom(endNode, loggerNodes);
 
-    for (const auto node : aStarResult)
-    {
-        std::cout << node->GetContent() << " ---> ";
-    }
+    //for (const auto& node : aStarResult) // Same as g.VisitParentsFrom
+    //{
+    //    std::cout << node->GetContent() << " ---> ";
+    //}
 
-    const auto durationTimer1 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer1 - startTimer1);
-    const auto durationTimer2 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer2 - startTimer2);
+    // Display timers result
+    const auto durationTimer1 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer1 - startTimer1).count();
+    const auto durationTimer2 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer2 - startTimer2).count();
 
     std::cout << std::endl;
-    std::cout << "Duration timer BFS: " << durationTimer1 << std::endl;
-    std::cout << "Duration timer AStar: " << durationTimer2 << std::endl;
+    std::cout << "Duration timer BFS: " << durationTimer1 << " ms" << std::endl;
+    std::cout << "Duration timer AStar: " << durationTimer2 << " ms" << std::endl;
 }
