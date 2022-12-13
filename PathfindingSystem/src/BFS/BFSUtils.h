@@ -41,6 +41,14 @@ struct LoggerNodes
     {
         NodeWeakPtr<T> pWeakNode(pSharedNode);
 
-        std::cout << pWeakNode.lock()->GetContent() << " ---> ";
+        if(auto node = pWeakNode.lock())
+        {
+            std::cout << node->GetContent() << " ---> ";
+        }
+        else
+        {
+            std::cout << "null ---> ";
+        }
+
     }
 };

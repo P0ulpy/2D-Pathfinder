@@ -6,54 +6,62 @@
 #include "src/BFS/BFSUtils.h"
 #include "src/AStar.h"
 
+constexpr int RAND_MAP_W = 50;
+constexpr int RAND_MAP_H = 20;
 
-//static constexpr int MAP_WIDTH = 12;
-//static constexpr int MAP_HEIGHT = 7;
-//
-//constexpr int defaultMap[MAP_HEIGHT][MAP_WIDTH] =
-//{
-//    { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 }, // Start at 0,0
-//    { 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0 },
-//    { 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0 },
-//    { 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0 },
-//    { 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0 },
-//    { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0 },
-//    { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 } // Finishes at bottom-right
-//};
+constexpr int DEF_MAP_W = 12;
+constexpr int DEF_MAP_H = 7;
+
+constexpr int DEF_MAP[DEF_MAP_H][DEF_MAP_W] =
+{
+    { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 }, // Start at 0,0
+    { 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0 },
+    { 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0 },
+    { 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0 },
+    { 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0 },
+    { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0 },
+    { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0 } // Finishes at bottom-right
+};
+
+constexpr bool USE_DEF_MAP = true; // Set it to true to use the default map above
+
+constexpr int FINAL_MAP_H = USE_DEF_MAP ? DEF_MAP_H : RAND_MAP_H;
+constexpr int FINAL_MAP_W = USE_DEF_MAP ? DEF_MAP_W : RAND_MAP_W;
 
 int main()
 {
-    static constexpr int MAP_WIDTH = 30;
-    static constexpr int MAP_HEIGHT = 30;
-
-    // =========== Construct default node map
     using NodeTile2D = TNode<Tile2D>;
 
-    Tile2D tileMap2D[MAP_HEIGHT][MAP_WIDTH];
+    Tile2D tileMap2D[FINAL_MAP_H][FINAL_MAP_W]; // Used to construct a default graph easier
     TGraph<Tile2D> g;
 
+    // =========== Construct default node map
     std::srand(std::time(nullptr));
 
-    for (int l = 0; l < MAP_HEIGHT; ++l)
+    for (int l = 0; l < FINAL_MAP_H; ++l)
     {
-        for (int c = 0; c < MAP_WIDTH; ++c)
+        for (int c = 0; c < FINAL_MAP_W; ++c)
         {
-            const auto isTraversable = static_cast<bool>(std::rand() % 7);
-            tileMap2D[l][c] = Tile2D(c, l, isTraversable);
+            const auto isTraversable = static_cast<bool>((USE_DEF_MAP ? !DEF_MAP[l][c] : std::rand() % 6));
+            const auto newTile = Tile2D(c, l, isTraversable);
 
-            std::cout << (!isTraversable ? "X " : " "); // Just to see the map
+            tileMap2D[l][c] = newTile;
+            g.AddNodes(newTile);
 
-            g.AddNodes(tileMap2D[l][c]);
+            std::cout << (!isTraversable ? "X " : "  "); // Just to see the map
         }
+
         std::cout << std::endl;
     }
 
+    // =========== Start and finish points are necessary traversable
     tileMap2D[0][0]._isTraversable = true;
-    tileMap2D[MAP_HEIGHT - 1][MAP_WIDTH - 1]._isTraversable = true;
+    tileMap2D[FINAL_MAP_H - 1][FINAL_MAP_W - 1]._isTraversable = true;
 
-    for (int l = 0; l < MAP_HEIGHT; ++l)
+    // =========== Linking every node to their neighbors, if they are traversable
+    for (int l = 0; l < FINAL_MAP_H; ++l)
     {
-        for (int c = 0; c < MAP_WIDTH; ++c)
+        for (int c = 0; c < FINAL_MAP_W; ++c)
         {
             if (!tileMap2D[l][c]._isTraversable)
                 continue; // Not traversable -> no neighbors
@@ -64,29 +72,29 @@ int main()
             if (l - 1 > 0 && tileMap2D[l - 1][c]._isTraversable)
                 g.AddEdge(tileMap2D[l][c], tileMap2D[l - 1][c]);
 
-            if (c + 1 < MAP_WIDTH && tileMap2D[l][c + 1]._isTraversable)
+            if (c + 1 < FINAL_MAP_W && tileMap2D[l][c + 1]._isTraversable)
                 g.AddEdge(tileMap2D[l][c], tileMap2D[l][c + 1]);
             
-            if (l + 1 < MAP_HEIGHT && tileMap2D[l + 1][c]._isTraversable)
+            if (l + 1 < FINAL_MAP_H && tileMap2D[l + 1][c]._isTraversable)
                 g.AddEdge(tileMap2D[l][c], tileMap2D[l + 1][c]);
         }
     }
 
-    // Just adding a portal
-    g.AddEdge(Tile2D(0, 2), Tile2D(6, 8));
+    // Test adding a portal
+    g.AddEdge(Tile2D(3, 4), Tile2D(11, 1));
 
-    // Remove the portal
-    g.RemoveEdge(Tile2D(0, 2), Tile2D(6, 8));
+    // Test remove the portal
+    g.RemoveEdge(Tile2D(3, 4), Tile2D(11, 1));
 
-    // Adding a wall
-    g.RemoveAllEdges(Tile2D(6, 10));
+    // Test adding a wall
+    g.RemoveAllEdges(Tile2D(9, 0));
 
-    // ----- Init
+    // =========== Init Pathfinder
     const auto beginNode = g.FindNode(Tile2D(0,0));
-    const auto endNode = g.FindNode(Tile2D(MAP_HEIGHT - 1, MAP_WIDTH - 1));
+    const auto endNode = g.FindNode(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));
 
-    // ---- BFS
-    std::cout << std::endl;
+    // =========== Run BFS
+    std::cout << std::endl << std::endl;
     std::cout << "BFS: " << std::endl;
 
 	auto queueNodesVisited = std::queue<std::shared_ptr<NodeTile2D>>();
@@ -101,7 +109,7 @@ int main()
 
     g.VisitParentsFrom(endNode, loggerNodes);
 
-    // --- Run AStar
+    // =========== Run AStar
     g.ResetParentsForAllNodes();
 
     std::cout << std::endl;
@@ -113,12 +121,7 @@ int main()
 
     g.VisitParentsFrom(endNode, loggerNodes);
 
-    //for (const auto& node : aStarResult) // Same as g.VisitParentsFrom
-    //{
-    //    std::cout << node->GetContent() << " ---> ";
-    //}
-
-    // Display timers result
+    // =========== Display timers result
     const auto durationTimer1 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer1 - startTimer1).count();
     const auto durationTimer2 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer2 - startTimer2).count();
 
