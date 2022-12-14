@@ -69,18 +69,18 @@ public:
 	void ResetParentsForAllNodes()
 	{
 		std::for_each(this->begin(), this->end(), [](const auto& node)
-			{
-				node->ResetParent();
-			});
+		{
+			node->ResetParent();
+		});
 	}
 
 	NodeSharedPtr<T> FindNode(const T& nodeContent)
 	{
 		// Find in the vector if the node is contained
 		const auto it = std::find_if(this->begin(), this->end(), [&nodeContent](const auto& pNode)
-			{
-				return pNode->GetContent() == nodeContent;
-			});
+		{
+			return pNode->GetContent() == nodeContent;
+		});
 
 		assert(it != this->end() && "The node is not present in the graph.");
 		return (*it);
