@@ -1,10 +1,9 @@
 #include <Engine/Engine.hpp>
-#include <PathfindingSystem/PathfindingSystem.hpp>
 
-#include "src/BFS/TGraph.h"
-#include "src/BFS/TNode.h"
-#include "src/BFS/BFSUtils.h"
-#include "src/AStar.h"
+#include "TGraph.h"
+#include "TNode.h"
+#include "BFS/BFSUtils.h"
+#include "AStar/AStar.h"
 
 constexpr int RAND_MAP_W = 50;
 constexpr int RAND_MAP_H = 20;
@@ -107,11 +106,13 @@ int main()
     g.TraversalGraphRecursifBreathFirst(endNode, queueNodesVisited, loggerNodes);
     const auto endTimer1 = std::chrono::high_resolution_clock::now();
 
+    /* display the Path */
     g.VisitParentsFrom(endNode, loggerNodes);
 
-    // =========== Run AStar
+    /* reset Parents */
     g.ResetParentsForAllNodes();
 
+    // =========== Run AStar
     std::cout << std::endl;
     std::cout << "AStar: " << std::endl;
 
@@ -119,6 +120,7 @@ int main()
     const auto aStarResult = AStar::RunAStar(beginNode, endNode);
     const auto endTimer2 = std::chrono::high_resolution_clock::now();
 
+    /* display the Path */
     g.VisitParentsFrom(endNode, loggerNodes);
 
     // =========== Display timers result
@@ -128,4 +130,6 @@ int main()
     std::cout << std::endl;
     std::cout << "Duration timer BFS: " << durationTimer1 << " ms" << std::endl;
     std::cout << "Duration timer AStar: " << durationTimer2 << " ms" << std::endl;
+
+    return 0;
 }
