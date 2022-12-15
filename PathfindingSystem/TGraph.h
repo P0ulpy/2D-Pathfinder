@@ -1,15 +1,11 @@
 #pragma once
 
-#include <iostream>
 #include <cassert>
-#include <queue>
-#include <unordered_map>
 
 #include "TNode.h"
 
 template<typename T>
-//using NodeSharedPtr = std::shared_ptr<TNode<T>>;
-using NodeSharedPtr = TNode<T>::NodeSharedPtr;
+using NodeSharedPtr = std::shared_ptr<TNode<T>>;
 
 template<typename T>
 using NodeWeakPtr = std::weak_ptr<TNode<T>>;
@@ -77,7 +73,7 @@ public:
 
 	NodeSharedPtr<T> FindNode(const T& nodeContent)
 	{
-		// Find in the vector if the node is contained
+		// Find in the list if the node is contained
 		const auto it = std::find_if(this->begin(), this->end(), [&nodeContent](const auto& pNode)
 		{
 			return pNode->GetContent() == nodeContent;
@@ -93,9 +89,9 @@ public:
 	}
 
 	template <typename Callable>
-	void VisitParentsFrom(TNode<T>::NodeSharedPtr currNode, Callable& Functor)
+	void VisitParentsFrom(NodeSharedPtr<T> currNode, Callable& Functor)
 	{
-		//Functor.Visit(currNode);
+		Functor.Visit(currNode);
 
 		const auto& parentNode = currNode->GetParent();
 		if (parentNode != nullptr && currNode != parentNode)

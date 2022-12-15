@@ -1,10 +1,13 @@
-#include "../TNode.h"
+#pragma once
+
 #include <queue>
 #include <iostream>
 
+#include "TGraph.h"
+
 struct AStar
 {
-    using SharedPtrNodeTile2D = TNode<Tile2D>::NodeSharedPtr;
+    using SharedPtrNodeTile2D = NodeSharedPtr<Tile2D>;
 
     AStar() = default;
 
@@ -80,16 +83,17 @@ struct AStar
     }
 };
 
+
 template<typename T>
 struct BFS
 {
     template <typename Callable>
-    void RunBFS(TNode<T>::NodeSharedPtr goalNode, std::queue<typename TNode<T>::NodeSharedPtr>& queueNodesToVisit, Callable& Functor)
+    static void RunBFS(NodeSharedPtr<T> goalNode, std::queue<NodeSharedPtr<T>>& queueNodesToVisit, Callable& Functor)
     {
         if (!queueNodesToVisit.empty())
         {
             auto currentNode = queueNodesToVisit.front();
-            //Functor.Visit(currentNode);
+            Functor.Visit(currentNode);
 
             if (currentNode == goalNode)
                 return; // Omg on a trouvé
@@ -105,7 +109,7 @@ struct BFS
                 }
             }
 
-            TraversalGraphRecursifBreathFirst(goalNode, queueNodesToVisit, Functor);
+            RunBFS(goalNode, queueNodesToVisit, Functor);
         }
     }
 };
@@ -114,7 +118,7 @@ struct BFS
 struct LoggerNodes
 {
     template <typename T>
-    void Visit(TNode<T>::NodeSharedPtr pSharedNode)
+    void Visit(NodeSharedPtr<T> pSharedNode)
     {
          std::cout << pSharedNode->GetContent() << " ---> ";
     }

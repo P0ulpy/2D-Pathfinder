@@ -102,7 +102,7 @@ int main()
 
     const auto startTimer1 = std::chrono::high_resolution_clock::now();
     
-    /*BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, loggerNodes);*/
+    BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, loggerNodes);
     //g.TraversalGraphRecursifBreathFirst(endNode, queueNodesVisited, loggerNodes);
     const auto endTimer1 = std::chrono::high_resolution_clock::now();
 
