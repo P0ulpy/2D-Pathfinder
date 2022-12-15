@@ -8,24 +8,24 @@
 
 struct Heuristic
 {
-    static sf::Vector2i getDelta(sf::Vector2i source_, sf::Vector2i target_)
+    static Vec2i getDelta(Vec2i source_, Vec2i target_)
     {
         return{ abs(source_.x - target_.x),  abs(source_.y - target_.y) };
     }
 
-    static double manhattan(sf::Vector2i source, sf::Vector2i target)
+    static double manhattan(Vec2i source, Vec2i target)
     {
         const auto& delta = std::move(getDelta(source, target));
         return static_cast<double>(10 * (delta.x + delta.y));
     }
 
-    static double euclidean(sf::Vector2i source_, sf::Vector2i target_)
+    static double euclidean(Vec2i source_, Vec2i target_)
     {
         const auto& delta = std::move(getDelta(source_, target_));
         return static_cast<double>(10 * sqrt(pow(delta.x, 2) + pow(delta.y, 2)));
     }
 
-    static double octagonal(sf::Vector2i source_, sf::Vector2i target_)
+    static double octagonal(Vec2i source_, Vec2i target_)
     {
         const auto& delta = std::move(getDelta(source_, target_));
         return static_cast <double> (10 * (delta.x + delta.y) + (-6) * std::min(delta.x, delta.y));
@@ -93,7 +93,7 @@ public:
                 if (std::ranges::find(closedList, neighbor) == closedList.end())
                 {
                     neighbor->GetContent().SetG(currentNode->GetContent().g + 10.0);
-                    neighbor->GetContent().SetH(Heuristic::manhattan(neighbor->GetContent()._pos, goalNode->GetContent()._pos));
+                    neighbor->GetContent().SetH(heuristic_compute(neighbor->GetContent()._pos, goalNode->GetContent()._pos));
 
                     //neighbor->SetIsVisitedByParent(currentNode);
                     Parents.insert({ neighbor, currentNode });
