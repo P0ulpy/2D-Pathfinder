@@ -6,7 +6,7 @@
 
 #include "TGraph.h"
 
-constexpr int RAND_MAP_W = 8;
+constexpr int RAND_MAP_W = 15;
 constexpr int RAND_MAP_H = 8;
 
 constexpr int DEF_MAP_W = 12;
@@ -23,91 +23,22 @@ constexpr int DEF_MAP[DEF_MAP_H][DEF_MAP_W] =
     { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0 } // Finishes at bottom-right
 };
 
-constexpr bool USE_DEF_MAP = true; // Set it to true to use the default map above
+constexpr bool USE_DEF_MAP = false; // Set it to true to use the default map above
 
 constexpr int FINAL_MAP_H = USE_DEF_MAP ? DEF_MAP_H : RAND_MAP_H;
 constexpr int FINAL_MAP_W = USE_DEF_MAP ? DEF_MAP_W : RAND_MAP_W;
+
+void InitMap(GraphMap2D& g);
 
 int main()
 {
     using NodeTile2D = TNode<Tile2D>;
 
-    Tile2D tileMap2D[FINAL_MAP_H][FINAL_MAP_W]; // Used to construct a default graph easier
-    //TGraph<Tile2D> g;
-
-    //// =========== Construct default node map
-    //std::srand(std::time(nullptr));
-
-    //for (int l = 0; l < FINAL_MAP_H; ++l)
-    //{
-    //    for (int c = 0; c < FINAL_MAP_W; ++c)
-    //    {
-    //        const auto isTraversable = static_cast<bool>((USE_DEF_MAP ? !DEF_MAP[l][c] : std::rand() % 6));
-    //        const auto newTile = Tile2D(c, l, isTraversable);
-
-    //        tileMap2D[l][c] = newTile;
-    //        g.AddNodes(newTile);
-
-    //        std::cout << (!isTraversable ? "X " : "  "); // Just to see the map
-    //    }
-
-    //    std::cout << std::endl;
-    //}
-
-    //// =========== Start and finish points are necessary traversable
-    //tileMap2D[0][0]._isTraversable = true;
-    //tileMap2D[FINAL_MAP_H - 1][FINAL_MAP_W - 1]._isTraversable = true;
-
-    //// =========== Linking every node to their neighbors, if they are traversable
-    //for (int l = 0; l < FINAL_MAP_H; ++l)
-    //{
-    //    for (int c = 0; c < FINAL_MAP_W; ++c)
-    //    {
-    //        if (!tileMap2D[l][c]._isTraversable)
-    //            continue; // Not traversable -> no neighbors
-
-    //        if (c - 1 > 0 && tileMap2D[l][c - 1]._isTraversable)
-    //            g.AddEdge(tileMap2D[l][c], tileMap2D[l][c - 1]);
-
-    //        if (l - 1 > 0 && tileMap2D[l - 1][c]._isTraversable)
-    //            g.AddEdge(tileMap2D[l][c], tileMap2D[l - 1][c]);
-
-    //        if (c + 1 < FINAL_MAP_W && tileMap2D[l][c + 1]._isTraversable)
-    //            g.AddEdge(tileMap2D[l][c], tileMap2D[l][c + 1]);
-    //        
-    //        if (l + 1 < FINAL_MAP_H && tileMap2D[l + 1][c]._isTraversable)
-    //            g.AddEdge(tileMap2D[l][c], tileMap2D[l + 1][c]);
-    //    }
-    //}
-
     GraphMap2D g(FINAL_MAP_W, FINAL_MAP_H);
 
-    //g.SetRandomWallsForMap(4);
-
-    //g.RemoveWallAt(Tile2D(0, 0));
-    //g.RemoveWallAt(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));
-
-    g.AddWallAt(Tile2D(1, 0));
-    //g.AddWallAt(Tile2D(2, 1));
-    //g.AddWallAt(Tile2D(3, 1));
-    //g.AddWallAt(Tile2D(1, 2));
-    //g.AddWallAt(Tile2D(2, 2));
-    //g.AddWallAt(Tile2D(3, 2));
-    //g.AddWallAt(Tile2D(1, 3));
-    //g.AddWallAt(Tile2D(2, 3));
-    //g.AddWallAt(Tile2D(3, 3));
-    //g.RemoveWallAt(Tile2D(2, 2));
+    InitMap(g);
 
     g.DisplayGraphInConsole();
-
-    // Test adding a portal
-    //g.AddEdge(Tile2D(3, 4), Tile2D(11, 1));
-
-    //// Test remove the portal
-    //g.RemoveEdge(Tile2D(3, 4), Tile2D(11, 1));
-
-    //// Test adding a wall
-    //g.RemoveAllEdges(Tile2D(9, 0));
 
     // =========== Init Pathfinder
     const auto beginNode = g.GetGraph().FindNode(Tile2D(0,0));
@@ -137,8 +68,8 @@ int main()
     BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, functorBFSAllNodesVisited);
     const auto endTimer1 = std::chrono::high_resolution_clock::now();
 
-    std::cout << "\nCustomLoggerNode: " << std::endl;
-    g.GetGraph().VisitParentsFrom(endNode, customLoggerNode);
+    //std::cout << "\nCustomLoggerNode: " << std::endl;
+    //g.GetGraph().VisitParentsFrom(endNode, customLoggerNode);
 
     std::cout << "\n\nDefautlLoggerNode: " << std::endl;
     g.GetGraph().VisitParentsFrom(endNode, defaultLoggerNode);
@@ -165,4 +96,43 @@ int main()
     std::cout << "Duration timer AStar: " << durationTimer2 << " us. Node count in the path: " << static_cast<int>(aStarResult.size()) << std::endl;
 
     return 0;
+}
+
+void InitMap(GraphMap2D& g)
+{
+    if (USE_DEF_MAP)
+    {
+        for (int l = 0; l < FINAL_MAP_H; ++l)
+        {
+            for (int c = 0; c < FINAL_MAP_W; ++c)
+            {
+                if (static_cast<bool>(DEF_MAP[l][c]))
+                {
+                    g.AddWallAt(Tile2D(c, l));
+                }
+            }
+        }
+    }
+    else
+    {
+        g.SetRandomWallsForMap(7);
+
+        g.RemoveWallAt(Tile2D(0, 0));
+        g.RemoveWallAt(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));
+
+        g.AddWallAt(Tile2D(3, 2));
+        g.AddWallAt(Tile2D(4, 2));
+        g.AddWallAt(Tile2D(5, 2));
+        g.AddWallAt(Tile2D(3, 3));
+        g.AddWallAt(Tile2D(4, 3));
+        g.AddWallAt(Tile2D(5, 3));
+        g.AddWallAt(Tile2D(3, 4));
+        g.AddWallAt(Tile2D(4, 4));
+        g.AddWallAt(Tile2D(5, 4));
+        g.RemoveWallAt(Tile2D(4, 3)); // Should display a node alone, surrounded by walls
+
+        g.AddPortal(Tile2D(0, 1), Tile2D(7, 7));
+        g.RemovePortal(Tile2D(0, 1), Tile2D(7, 7));
+        g.RemovePortal(Tile2D(0, 2), Tile2D(7, 7)); // Doesn't work because no portal
+    }
 }

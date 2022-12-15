@@ -21,7 +21,7 @@ struct Tile2D
 	Tile2D(const Vec2i point, bool isWall = true) : _pos(point.x, point.y), _isTraversable(isWall) {}
 
 	Vec2i _pos{ 0, 0 };
-	bool _isTraversable{ false }; // Could be replaced by an int _weight
+	bool _isTraversable{ false };
 
 	/* distance from the starting node to a given node */
 	double g{ 0 };

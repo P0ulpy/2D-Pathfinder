@@ -142,7 +142,10 @@ public:
 	{
 		const auto& nodeTile2D = _graph.FindNode(tile2D);
 
-		nodeTile2D->GetContent().SetIsTraversable(false);
+		Tile2D newContent = Tile2D(nodeTile2D->GetContent());
+		newContent.SetIsTraversable(false);
+		nodeTile2D->SetContent(newContent);
+
 		_graph.RemoveAllEdges(nodeTile2D);
 	}
 	
@@ -152,7 +155,10 @@ public:
 
 		if(IsTileAWall(nodeTile2D))
 		{
-			nodeTile2D->GetContent().SetIsTraversable(true);
+			Tile2D newContent = Tile2D(nodeTile2D->GetContent());
+			newContent.SetIsTraversable(true);
+			nodeTile2D->SetContent(newContent);
+
 			UpdateDirectNeighborsForTile(nodeTile2D, true);
 		}
 	}
@@ -165,13 +171,13 @@ public:
 		const auto x = nodeTile2D->GetContent()._pos.x;
 		const auto y = nodeTile2D->GetContent()._pos.y;
 
-		if (x - 1 > 0) // Left neighbor
+		if (x - 1 >= 0) // Left neighbor
 		{
 			if(const auto neighborNode = _graph.FindNode(Tile2D(x - 1, y)); ignoreIfNeighborsAreWalls || !IsTileAWall(neighborNode))
 				_graph.AddEdge(nodeTile2D, neighborNode);
 		}
 
-		if (y - 1 > 0) // Top neighbor
+		if (y - 1 >= 0) // Top neighbor
 		{
 			if (const auto neighborNode = _graph.FindNode(Tile2D(x, y - 1)); ignoreIfNeighborsAreWalls || !IsTileAWall(neighborNode))
 				_graph.AddEdge(nodeTile2D, neighborNode);
@@ -203,6 +209,9 @@ public:
 
 	void AddPortal(const Tile2D& tile2DFirst, const Tile2D& tile2DSecond)
 	{
+		RemoveWallAt(tile2DFirst);
+		RemoveWallAt(tile2DSecond);
+
 		_graph.AddEdge(tile2DFirst, tile2DSecond);
 	}
 
