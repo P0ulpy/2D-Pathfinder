@@ -1,9 +1,10 @@
 #pragma once
 
 #include <queue>
-#include <iostream>
+#include <list>
 
-#include "TGraph.h"
+#include "NodeElements.h"
+#include "../TGraph.h"
 
 struct AStar
 {
@@ -58,11 +59,13 @@ struct AStar
                     {
                         std::list<SharedPtrNodeTile2D> path;
                         auto current = neighbor;
-                        while (current != nullptr) {
+
+                        while (current != nullptr) 
+                        {
                             path.push_back(current);
                             current = current->GetParent();
                         }
-                        //path.reverse();
+                        
                         return path;
                     }
                 }
@@ -96,7 +99,7 @@ struct BFS
             Functor.Visit(currentNode);
 
             if (currentNode == goalNode)
-                return; // Omg on a trouvé
+                return; // Found !
 
             queueNodesToVisit.pop();
 

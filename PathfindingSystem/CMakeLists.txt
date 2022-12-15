@@ -1,6 +1,7 @@
 set(PATHFINDING_SYSTEM_HEADERS
         Utilities/Algo.h
         Utilities/NodeFunctors.h
+        Utilities/NodeElements.h
         TGraph.h
         TNode.h)
 
