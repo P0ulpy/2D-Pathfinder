@@ -8,7 +8,8 @@
 #include "TNode.h"
 
 template<typename T>
-using NodeSharedPtr = std::shared_ptr<TNode<T>>;
+//using NodeSharedPtr = std::shared_ptr<TNode<T>>;
+using NodeSharedPtr = TNode<T>::NodeSharedPtr;
 
 template<typename T>
 using NodeWeakPtr = std::weak_ptr<TNode<T>>;
@@ -92,40 +93,14 @@ public:
 	}
 
 	template <typename Callable>
-	void VisitParentsFrom(NodeSharedPtr<T> currNode, Callable& Functor)
+	void VisitParentsFrom(TNode<T>::NodeSharedPtr currNode, Callable& Functor)
 	{
-		Functor.Visit(currNode);
+		//Functor.Visit(currNode);
 
 		const auto& parentNode = currNode->GetParent();
 		if (parentNode != nullptr && currNode != parentNode)
 		{
 			VisitParentsFrom(parentNode, Functor);
-		}
-	}
-
-	template <typename Callable>
-	void TraversalGraphRecursifBreathFirst(NodeSharedPtr<T> goalNode, std::queue<NodeSharedPtr<T>>& queueNodesToVisit, Callable& Functor)
-	{
-		if (!queueNodesToVisit.empty())
-		{
-			auto currentNode = queueNodesToVisit.front();
-			//Functor.Visit(currentNode);
-
-			if (currentNode == goalNode)
-				return; // Omg on a trouvé
-
-			queueNodesToVisit.pop();
-
-			for (const auto& neighbor : currentNode->GetNeighbors())
-			{
-				if (!neighbor->IsVisitedByParent())
-				{
-					neighbor->SetIsVisitedByParent(currentNode); // Put currentNode as parent ref of neighbor
-					queueNodesToVisit.push(neighbor);
-				}
-			}
-
-			TraversalGraphRecursifBreathFirst(goalNode, queueNodesToVisit, Functor);
 		}
 	}
 };

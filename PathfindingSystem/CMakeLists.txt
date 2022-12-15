@@ -1,13 +1,9 @@
 set(PATHFINDING_SYSTEM_HEADERS
-        BFS/BFSUtils.h
+        Utilities/Algo.h
         TGraph.h
-        TNode.h
-        AStar/AStar.h)
+        TNode.h)
 
 set(PATHFINDING_SYSTEM_SOURCES
-        AStar/AStar.cpp
-        BFS/BFS.cpp
-        TGraph.cpp
         TNode.cpp
         )
 

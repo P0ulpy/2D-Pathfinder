@@ -3,128 +3,93 @@
 #include <memory>
 #include <list>
 #include <algorithm>
+#include <ostream>
 #include <vector>
+
+struct Vec2i
+{
+	int x, y;
+
+	inline Vec2i(int x, int y) : x(x), y(y) {}
+
+	inline bool operator==(const Vec2i& other) const
+	{
+		return (other.x == x && other.y == y);
+	}
+};
 
 // Le node
 template<typename T>
 class TNode
 {
-	template<typename P>
-	using NodeSharedPtr = std::shared_ptr<TNode<P>>;
-
 public:
-	TNode() : TNode(T())
-	{ }
+	using NodeSharedPtr = std::shared_ptr<TNode<T>>;
+	using NodeWeakPtr = std::weak_ptr<TNode<T>>;
 
-	TNode(const T& content/* = T()*/) // Can't make the difference between default contructor and copy constructor with T() as default parameter
-		: _content(content)
-	{
 
-	}
+	inline TNode() : TNode(T()) { }
 
-	TNode(const TNode& node) : _content(node._content)
+	inline TNode(const T& content)
+		: _content(content) { }
+
+	inline TNode(const TNode& node) : _content(node._content)
 	{
 		for (auto& neighbor : node._neighbors)
 			_neighbors.push_back(neighbor);
 	}
 
-	TNode& operator=(TNode&& other) noexcept // move assignment
+	inline TNode& operator=(TNode&& other) noexcept // move assignment
 	{
 		return *this;
 	}
 
-	TNode& operator=(const TNode& node)
+	inline TNode& operator=(const TNode& node)
 	{
 		return *this;
 	}
 
 	~TNode() = default;
 
-	bool operator==(const TNode& node)
+	inline bool operator==(const TNode& node)
 	{
 		return (_content == node._content && _neighbors.size() == node._neighbors.size());
 	}
 
-	bool operator!=(const TNode& node)
+	inline bool operator!=(const TNode& node)
 	{
 		return !(*this == node);
 	}
 
 
 	template<typename...Args>
-	void AddNeighbors(NodeSharedPtr<T> pNode, Args... args)
-	{
-		if (IsAlreadyNeighbor(*pNode))
-			return;
+	void AddNeighbors(NodeSharedPtr pNode, Args... args);
 
-		assert(!IsAlreadyNeighbor(*pNode) && "Neighbour already added");
+	void RemoveNeighbor(NodeSharedPtr neighborToRemove);
 
-		_neighbors.push_back(std::move(pNode));
-		if constexpr (sizeof...(args) > 0)
-			AddNeighbors(args...);
-	}
+	void ClearAllNeighbors();
 
-	void RemoveNeighbor(NodeSharedPtr<T> neighborToRemove)
-	{
-		_neighbors.remove_if([&neighborToRemove, this](const auto currNeighbor)
-		{
-			return neighborToRemove->_content == currNeighbor->_content && neighborToRemove->IsAlreadyNeighbor(*this);
-		});
-	}
+	bool HasSameContent(const TNode& node) const;
 
-	void ClearAllNeighbors()
-	{
-		_neighbors.clear();
-	}
+	void SetContent(T content);
 
-	bool HasSameContent(const TNode& node) const
-	{
-		return _content == node._content;
-	}
+	T GetContent() const;
 
-	void SetContent(T content)
-	{
-		_content = content;
-	}
+	const std::list<NodeSharedPtr>& GetNeighbors() const;
 
-	T GetContent() const
-	{
-		return _content;
-	}
+	void SetIsVisitedByParent(const std::shared_ptr<TNode<T>>& parent);
 
-	const std::list<NodeSharedPtr<T>>& GetNeighbors() const
-	{
-		return _neighbors;
-	}
-
-	void SetIsVisitedByParent(const std::shared_ptr<TNode<T>>& parent)
-	{
-		if (_parent == nullptr)
-		{
-			_parent = parent;
-		}
-	}
-
-	bool IsVisitedByParent() const { return _parent != nullptr; }
-	NodeSharedPtr<T> GetParent() const { return _parent; }
-	void ResetParent() { _parent.reset(); }
+	bool IsVisitedByParent() const;
+	NodeSharedPtr GetParent() const;
+	void ResetParent();
 
 private:
 
-	bool IsAlreadyNeighbor(const TNode& nodeNeighborToFind) const
-	{
-		const auto it = std::find_if(_neighbors.begin(), _neighbors.end(), [&nodeNeighborToFind](const auto pNeighbor)
-		{
-			return nodeNeighborToFind._content == pNeighbor->_content;
-		});
-
-		return it != _neighbors.end();
-	}
+	bool IsAlreadyNeighbor(const TNode& nodeNeighborToFind) const;
 
 	T _content;
-	std::list<NodeSharedPtr<T>> _neighbors;
+	std::list<NodeSharedPtr> _neighbors;
 
-	NodeSharedPtr<T> _parent{ nullptr };
+	NodeSharedPtr _parent{ nullptr };
 };
 
 
@@ -132,9 +97,9 @@ struct Tile2D
 {
 	Tile2D() = default;
 	Tile2D(int x, int y, bool isTraversable = true) : _pos(x, y), _isTraversable(isTraversable) {}
-	Tile2D(const sf::Vector2i point, bool isWall = true) : _pos(point.x, point.y), _isTraversable(isWall) {}
+	Tile2D(const Vec2i point, bool isWall = true) : _pos(point.x, point.y), _isTraversable(isWall) {}
 
-	sf::Vector2i _pos{ 0, 0 };
+	Vec2i _pos{ 0, 0 };
 	bool _isTraversable{ false }; // Could be replaced by an int _weight
 
 	/* distance from the starting node to a given node */
@@ -142,20 +107,20 @@ struct Tile2D
 	/* distance from a given node to the final node */
 	double h{ 0 };
 
-	void SetG(const double value) { g = value; }
-	void SetH(const double value) { h = value; }
+	inline void SetG(const double value) { g = value; }
+	inline void SetH(const double value) { h = value; }
 
-	bool operator==(const Tile2D& tile) const
+	inline bool operator==(const Tile2D& tile) const
 	{
 		return _pos == tile._pos;
 	}
 
-	friend std::ostream& operator<<(std::ostream& os, const Tile2D& tile) // Why "friend" here and not on == operator ?
+	inline friend std::ostream& operator<<(std::ostream& os, Tile2D& tile) // Why "friend" here and not on == operator ?
 	{
 		os << tile._pos.x << "_" << tile._pos.y;
 		return os;
 	}
 
 	/* G + H, sum of the two distances */
-	double GetF() const { return g + h; };
+	inline double GetF() const { return g + h; };
 };

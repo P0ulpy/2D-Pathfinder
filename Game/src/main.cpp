@@ -1,9 +1,7 @@
 #include <Engine/Engine.hpp>
 
+#include "Utilities/Algo.h"
 #include "TGraph.h"
-#include "TNode.h"
-#include "BFS/BFSUtils.h"
-#include "AStar/AStar.h"
 
 constexpr int RAND_MAP_W = 50;
 constexpr int RAND_MAP_H = 20;
@@ -103,7 +101,9 @@ int main()
     LoggerNodes loggerNodes;
 
     const auto startTimer1 = std::chrono::high_resolution_clock::now();
-    g.TraversalGraphRecursifBreathFirst(endNode, queueNodesVisited, loggerNodes);
+    
+    /*BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, loggerNodes);*/
+    //g.TraversalGraphRecursifBreathFirst(endNode, queueNodesVisited, loggerNodes);
     const auto endTimer1 = std::chrono::high_resolution_clock::now();
 
     /* display the Path */
