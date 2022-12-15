@@ -6,31 +6,40 @@
 #define PATHFINDER_COMPONENT_HPP
 
 #include "../../Core/UUID.hpp"
+#include "../../Core/RTTI/RTTI.hpp"
 
 namespace Engine
 {
     using ComponentHandle = Core::UUID;
 
-    class Component
+    namespace ComponentID
     {
-    protected:
-        Component() = default;
-        virtual ~Component() = default;
+        using ID = uint64_t;
+        constexpr ID Null = 0;
+    }
+
+    class Component : public IHasRTTI
+    {
+    public:
+        DECLARE_RTTI(Component, NoRTTIAncestor)
 
     public:
         virtual void OnAwake();
         virtual void OnStart();
         virtual void OnUpdate(const float& deltaTime);
-        virtual void OnRender();
         virtual void OnImGuiRender();
         virtual void OnDestroy();
+
+    protected:
+        Component() = default;
+        virtual ~Component() = default;
 
     private:
         ComponentHandle m_handle = ComponentHandle::Null;
 
         friend class EntitiesRegistry;
 
-        template <typename TComponent>
+        template <class TComponent>
         friend class ComponentSystem;
     };
 

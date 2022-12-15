@@ -7,8 +7,6 @@
 
 namespace Engine
 {
-    const EntityHandle EntityHandle::Null = EntityHandle(0);
-
     Entity::Entity(EntityHandle handle, Scene *scene)
         : m_handle(handle)
         , m_Scene(scene)
