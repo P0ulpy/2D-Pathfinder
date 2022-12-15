@@ -4,7 +4,7 @@
 #include "TGraph.h"
 
 constexpr int RAND_MAP_W = 50;
-constexpr int RAND_MAP_H = 20;
+constexpr int RAND_MAP_H = 25;
 
 constexpr int DEF_MAP_W = 12;
 constexpr int DEF_MAP_H = 7;
@@ -20,7 +20,7 @@ constexpr int DEF_MAP[DEF_MAP_H][DEF_MAP_W] =
     { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0 } // Finishes at bottom-right
 };
 
-constexpr bool USE_DEF_MAP = true; // Set it to true to use the default map above
+constexpr bool USE_DEF_MAP = false; // Set it to true to use the default map above
 
 constexpr int FINAL_MAP_H = USE_DEF_MAP ? DEF_MAP_H : RAND_MAP_H;
 constexpr int FINAL_MAP_W = USE_DEF_MAP ? DEF_MAP_W : RAND_MAP_W;
@@ -90,45 +90,56 @@ int main()
     const auto beginNode = g.FindNode(Tile2D(0,0));
     const auto endNode = g.FindNode(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));
 
+    using NodeSharedPtrTile2D = NodeSharedPtr<Tile2D>;
+
+    const std::function<void(NodeSharedPtrTile2D)> testFunctionLoggerNode = [](const NodeSharedPtrTile2D& node)
+    {
+        std::cout << node->GetContent()._isTraversable;
+    };
+
+    FunctorLoggerNodes defaultLoggerNode;
+    FunctorVisitedList<Tile2D> functorBFSAllNodesVisited(FINAL_MAP_H * FINAL_MAP_W);
+    FunctorVisitedList<Tile2D> functorBFSFinalPathNodes;
+    FunctorCustomLoggerNodes<Tile2D> customLoggerNode(testFunctionLoggerNode);
+
     // =========== Run BFS
     std::cout << std::endl << std::endl;
     std::cout << "BFS: " << std::endl;
 
-	auto queueNodesVisited = std::queue<std::shared_ptr<NodeTile2D>>();
+	auto queueNodesVisited = std::queue<NodeSharedPtrTile2D>();
     queueNodesVisited.push(beginNode);
     queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
 
-    LoggerNodes loggerNodes;
-
     const auto startTimer1 = std::chrono::high_resolution_clock::now();
-    
-    BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, loggerNodes);
+    BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, functorBFSAllNodesVisited);
     const auto endTimer1 = std::chrono::high_resolution_clock::now();
 
-    /* display the Path */
-    g.VisitParentsFrom(endNode, loggerNodes);
+    std::cout << "\nCustomLoggerNode: " << std::endl;
+    g.VisitParentsFrom(endNode, customLoggerNode);
+
+    std::cout << "\n\nDefautlLoggerNode: " << std::endl;
+    g.VisitParentsFrom(endNode, defaultLoggerNode);
+
+    g.VisitParentsFrom(endNode, functorBFSFinalPathNodes);
 
     /* reset Parents */
     g.ResetParentsForAllNodes();
 
-    // =========== Run AStar
-    std::cout << std::endl;
-    std::cout << "AStar: " << std::endl;
+    std::cout << "\n\nAStar: " << std::endl;
 
     const auto startTimer2 = std::chrono::high_resolution_clock::now();
     const auto aStarResult = AStar::RunAStar(beginNode, endNode);
     const auto endTimer2 = std::chrono::high_resolution_clock::now();
 
-    /* display the Path */
-    g.VisitParentsFrom(endNode, loggerNodes);
+    g.VisitParentsFrom(endNode, defaultLoggerNode);
 
     // =========== Display timers result
     const auto durationTimer1 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer1 - startTimer1).count();
     const auto durationTimer2 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer2 - startTimer2).count();
 
-    std::cout << std::endl;
-    std::cout << "Duration timer BFS: " << durationTimer1 << " ms" << std::endl;
-    std::cout << "Duration timer AStar: " << durationTimer2 << " ms" << std::endl;
+    std::cout << std::endl << std::endl;
+    std::cout << "Duration timer BFS: " << durationTimer1 << " us. Node count in the path: " << static_cast<int>(functorBFSFinalPathNodes._listVisited.size()) << std::endl;
+    std::cout << "Duration timer AStar: " << durationTimer2 << " us. Node count in the path: " << static_cast<int>(aStarResult.size()) << std::endl;
 
     return 0;
 }
