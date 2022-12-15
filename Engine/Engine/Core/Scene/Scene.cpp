@@ -20,9 +20,16 @@ namespace Engine
     void Scene::OnUpdate(Timestep ts)
     {
         // TODO : Update Updatable Entities using registry view
-        /*m_registry.view<IUpdatable>((IUpdatable updatableComponent) ->
+        /*
+        m_registry.view<Updatable>((IUpdatable updatableComponent) ->
         {
             updatableComponent.Update(dt);
-        });*/
+        });
+        */
+
+        m_registry.ViewUpdatable([&](Component* component) -> void
+        {
+            component->OnUpdate(ts);
+        });
     }
 } // Engine
