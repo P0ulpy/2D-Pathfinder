@@ -1,10 +1,9 @@
+#include <iostream>
 #include <Engine/Engine.hpp>
-#include <PathfindingSystem/PathfindingSystem.hpp>
 
-#include "src/BFS/TGraph.h"
-#include "src/BFS/TNode.h"
-#include "src/BFS/BFSUtils.h"
-#include "src/AStar.h"
+#include "Utilities/Algo.h"
+#include "Utilities/NodeFunctors.h"
+#include "TGraph.h"
 
 constexpr int RAND_MAP_W = 50;
 constexpr int RAND_MAP_H = 50;
@@ -115,7 +114,7 @@ int main()
     queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
 
     const auto startTimerBFS = std::chrono::high_resolution_clock::now();
-    g.TraversalGraphRecursifBreathFirst(endNode, queueNodesVisited, functorBFSAllNodesVisited);
+    BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, functorBFSAllNodesVisited);
     const auto endTimerBFS = std::chrono::high_resolution_clock::now();
 
     std::cout << "\nCustomLoggerNode: " << std::endl;
@@ -126,7 +125,7 @@ int main()
 
     g.VisitParentsFrom(endNode, functorBFSFinalPathNodes);
 
-    // =========== Reset Parents
+    /* reset Parents */
     g.ResetParentsForAllNodes();
 
     std::cout << "\n\nAStar: " << std::endl;

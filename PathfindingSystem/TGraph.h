@@ -1,9 +1,6 @@
 #pragma once
 
-#include <iostream>
 #include <cassert>
-#include <queue>
-#include <unordered_map>
 
 #include "TNode.h"
 
@@ -76,7 +73,7 @@ public:
 
 	NodeSharedPtr<T> FindNode(const T& nodeContent)
 	{
-		// Find in the vector if the node is contained
+		// Find in the list if the node is contained
 		const auto it = std::find_if(this->begin(), this->end(), [&nodeContent](const auto& pNode)
 		{
 			return pNode->GetContent() == nodeContent;
@@ -100,32 +97,6 @@ public:
 		if (parentNode != nullptr && currNode != parentNode)
 		{
 			VisitParentsFrom(parentNode, Functor);
-		}
-	}
-
-	template <typename Callable>
-	void TraversalGraphRecursifBreathFirst(NodeSharedPtr<T> goalNode, std::queue<NodeSharedPtr<T>>& queueNodesToVisit, Callable& Functor)
-	{
-		if (!queueNodesToVisit.empty())
-		{
-			auto currentNode = queueNodesToVisit.front();
-			//Functor.Visit(currentNode);
-
-			if (currentNode == goalNode)
-				return; // Omg on a trouvé
-
-			queueNodesToVisit.pop();
-
-			for (const auto& neighbor : currentNode->GetNeighbors())
-			{
-				if (!neighbor->IsVisitedByParent())
-				{
-					neighbor->SetIsVisitedByParent(currentNode); // Put currentNode as parent ref of neighbor
-					queueNodesToVisit.push(neighbor);
-				}
-			}
-
-			TraversalGraphRecursifBreathFirst(goalNode, queueNodesToVisit, Functor);
 		}
 	}
 };
