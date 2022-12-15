@@ -10,9 +10,9 @@ struct Vec2i
 {
 	int x, y;
 
-	inline Vec2i(int x, int y) : x(x), y(y) {}
+	Vec2i(int x, int y) : x(x), y(y) {}
 
-	inline bool operator==(const Vec2i& other) const
+	bool operator==(const Vec2i& other) const
 	{
 		return (other.x == x && other.y == y);
 	}

@@ -1,6 +1,7 @@
 #include <Engine/Engine.hpp>
 
 #include "Utilities/Algo.h"
+#include "Utilities/NodeFunctors.h"
 #include "TGraph.h"
 
 constexpr int RAND_MAP_W = 50;
