@@ -1,6 +1,9 @@
 set(PATHFINDING_SYSTEM_HEADERS
         PathfindingSystem/PathfindingSystem.hpp
-        )
+        src/BFS/BFSUtils.h
+        src/BFS/TGraph.h
+        src/BFS/TNode.h
+         "src/AStar.h")
 
 set(PATHFINDING_SYSTEM_SOURCES
         PathfindingSystem/PathfindingSystem.cpp
