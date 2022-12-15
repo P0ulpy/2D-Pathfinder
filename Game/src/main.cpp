@@ -3,10 +3,11 @@
 
 #include "Utilities/Algo.h"
 #include "Utilities/NodeFunctors.h"
+
 #include "TGraph.h"
 
-constexpr int RAND_MAP_W = 50;
-constexpr int RAND_MAP_H = 25;
+constexpr int RAND_MAP_W = 8;
+constexpr int RAND_MAP_H = 8;
 
 constexpr int DEF_MAP_W = 12;
 constexpr int DEF_MAP_H = 7;
@@ -22,7 +23,7 @@ constexpr int DEF_MAP[DEF_MAP_H][DEF_MAP_W] =
     { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0 } // Finishes at bottom-right
 };
 
-constexpr bool USE_DEF_MAP = false; // Set it to true to use the default map above
+constexpr bool USE_DEF_MAP = true; // Set it to true to use the default map above
 
 constexpr int FINAL_MAP_H = USE_DEF_MAP ? DEF_MAP_H : RAND_MAP_H;
 constexpr int FINAL_MAP_W = USE_DEF_MAP ? DEF_MAP_W : RAND_MAP_W;
@@ -32,65 +33,85 @@ int main()
     using NodeTile2D = TNode<Tile2D>;
 
     Tile2D tileMap2D[FINAL_MAP_H][FINAL_MAP_W]; // Used to construct a default graph easier
-    TGraph<Tile2D> g;
+    //TGraph<Tile2D> g;
 
-    // =========== Construct default node map
-    std::srand(std::time(nullptr));
+    //// =========== Construct default node map
+    //std::srand(std::time(nullptr));
 
-    for (int l = 0; l < FINAL_MAP_H; ++l)
-    {
-        for (int c = 0; c < FINAL_MAP_W; ++c)
-        {
-            const auto isTraversable = static_cast<bool>((USE_DEF_MAP ? !DEF_MAP[l][c] : std::rand() % 6));
-            const auto newTile = Tile2D(c, l, isTraversable);
+    //for (int l = 0; l < FINAL_MAP_H; ++l)
+    //{
+    //    for (int c = 0; c < FINAL_MAP_W; ++c)
+    //    {
+    //        const auto isTraversable = static_cast<bool>((USE_DEF_MAP ? !DEF_MAP[l][c] : std::rand() % 6));
+    //        const auto newTile = Tile2D(c, l, isTraversable);
 
-            tileMap2D[l][c] = newTile;
-            g.AddNodes(newTile);
+    //        tileMap2D[l][c] = newTile;
+    //        g.AddNodes(newTile);
 
-            std::cout << (!isTraversable ? "X " : "  "); // Just to see the map
-        }
+    //        std::cout << (!isTraversable ? "X " : "  "); // Just to see the map
+    //    }
 
-        std::cout << std::endl;
-    }
+    //    std::cout << std::endl;
+    //}
 
-    // =========== Start and finish points are necessary traversable
-    tileMap2D[0][0]._isTraversable = true;
-    tileMap2D[FINAL_MAP_H - 1][FINAL_MAP_W - 1]._isTraversable = true;
+    //// =========== Start and finish points are necessary traversable
+    //tileMap2D[0][0]._isTraversable = true;
+    //tileMap2D[FINAL_MAP_H - 1][FINAL_MAP_W - 1]._isTraversable = true;
 
-    // =========== Linking every node to their neighbors, if they are traversable
-    for (int l = 0; l < FINAL_MAP_H; ++l)
-    {
-        for (int c = 0; c < FINAL_MAP_W; ++c)
-        {
-            if (!tileMap2D[l][c]._isTraversable)
-                continue; // Not traversable -> no neighbors
+    //// =========== Linking every node to their neighbors, if they are traversable
+    //for (int l = 0; l < FINAL_MAP_H; ++l)
+    //{
+    //    for (int c = 0; c < FINAL_MAP_W; ++c)
+    //    {
+    //        if (!tileMap2D[l][c]._isTraversable)
+    //            continue; // Not traversable -> no neighbors
 
-            if (c - 1 > 0 && tileMap2D[l][c - 1]._isTraversable)
-                g.AddEdge(tileMap2D[l][c], tileMap2D[l][c - 1]);
+    //        if (c - 1 > 0 && tileMap2D[l][c - 1]._isTraversable)
+    //            g.AddEdge(tileMap2D[l][c], tileMap2D[l][c - 1]);
 
-            if (l - 1 > 0 && tileMap2D[l - 1][c]._isTraversable)
-                g.AddEdge(tileMap2D[l][c], tileMap2D[l - 1][c]);
+    //        if (l - 1 > 0 && tileMap2D[l - 1][c]._isTraversable)
+    //            g.AddEdge(tileMap2D[l][c], tileMap2D[l - 1][c]);
 
-            if (c + 1 < FINAL_MAP_W && tileMap2D[l][c + 1]._isTraversable)
-                g.AddEdge(tileMap2D[l][c], tileMap2D[l][c + 1]);
-            
-            if (l + 1 < FINAL_MAP_H && tileMap2D[l + 1][c]._isTraversable)
-                g.AddEdge(tileMap2D[l][c], tileMap2D[l + 1][c]);
-        }
-    }
+    //        if (c + 1 < FINAL_MAP_W && tileMap2D[l][c + 1]._isTraversable)
+    //            g.AddEdge(tileMap2D[l][c], tileMap2D[l][c + 1]);
+    //        
+    //        if (l + 1 < FINAL_MAP_H && tileMap2D[l + 1][c]._isTraversable)
+    //            g.AddEdge(tileMap2D[l][c], tileMap2D[l + 1][c]);
+    //    }
+    //}
+
+    GraphMap2D g(FINAL_MAP_W, FINAL_MAP_H);
+
+    //g.SetRandomWallsForMap(4);
+
+    //g.RemoveWallAt(Tile2D(0, 0));
+    //g.RemoveWallAt(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));
+
+    g.AddWallAt(Tile2D(1, 0));
+    //g.AddWallAt(Tile2D(2, 1));
+    //g.AddWallAt(Tile2D(3, 1));
+    //g.AddWallAt(Tile2D(1, 2));
+    //g.AddWallAt(Tile2D(2, 2));
+    //g.AddWallAt(Tile2D(3, 2));
+    //g.AddWallAt(Tile2D(1, 3));
+    //g.AddWallAt(Tile2D(2, 3));
+    //g.AddWallAt(Tile2D(3, 3));
+    //g.RemoveWallAt(Tile2D(2, 2));
+
+    g.DisplayGraphInConsole();
 
     // Test adding a portal
-    g.AddEdge(Tile2D(3, 4), Tile2D(11, 1));
+    //g.AddEdge(Tile2D(3, 4), Tile2D(11, 1));
 
-    // Test remove the portal
-    g.RemoveEdge(Tile2D(3, 4), Tile2D(11, 1));
+    //// Test remove the portal
+    //g.RemoveEdge(Tile2D(3, 4), Tile2D(11, 1));
 
-    // Test adding a wall
-    g.RemoveAllEdges(Tile2D(9, 0));
+    //// Test adding a wall
+    //g.RemoveAllEdges(Tile2D(9, 0));
 
     // =========== Init Pathfinder
-    const auto beginNode = g.FindNode(Tile2D(0,0));
-    const auto endNode = g.FindNode(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));
+    const auto beginNode = g.GetGraph().FindNode(Tile2D(0,0));
+    const auto endNode = g.GetGraph().FindNode(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));
 
     using NodeSharedPtrTile2D = NodeSharedPtr<Tile2D>;
 
@@ -117,15 +138,15 @@ int main()
     const auto endTimer1 = std::chrono::high_resolution_clock::now();
 
     std::cout << "\nCustomLoggerNode: " << std::endl;
-    g.VisitParentsFrom(endNode, customLoggerNode);
+    g.GetGraph().VisitParentsFrom(endNode, customLoggerNode);
 
     std::cout << "\n\nDefautlLoggerNode: " << std::endl;
-    g.VisitParentsFrom(endNode, defaultLoggerNode);
+    g.GetGraph().VisitParentsFrom(endNode, defaultLoggerNode);
 
-    g.VisitParentsFrom(endNode, functorBFSFinalPathNodes);
+    g.GetGraph().VisitParentsFrom(endNode, functorBFSFinalPathNodes);
 
     /* reset Parents */
-    g.ResetParentsForAllNodes();
+    g.GetGraph().ResetParentsForAllNodes();
 
     std::cout << "\n\nAStar: " << std::endl;
 
@@ -133,7 +154,7 @@ int main()
     const auto aStarResult = AStar::RunAStar(beginNode, endNode);
     const auto endTimer2 = std::chrono::high_resolution_clock::now();
 
-    g.VisitParentsFrom(endNode, defaultLoggerNode);
+    g.GetGraph().VisitParentsFrom(endNode, defaultLoggerNode);
 
     // =========== Display timers result
     const auto durationTimer1 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer1 - startTimer1).count();

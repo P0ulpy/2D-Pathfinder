@@ -28,7 +28,14 @@ struct Tile2D
 	/* distance from a given node to the final node */
 	double h{ 0 };
 
-	void SetG(const double value) { g = value; }
+	void SetIsTraversable(const bool isTraversable)
+	{
+		_isTraversable = isTraversable;
+	}
+	void SetG(const double value)
+	{
+		g = value;
+	}
 	void SetH(const double value) { h = value; }
 
 	bool operator==(const Tile2D& tile) const

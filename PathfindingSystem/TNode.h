@@ -93,6 +93,11 @@ public:
 		return _neighbors;
 	}
 
+	bool HasAnyNeighbors() const
+	{
+		return !_neighbors.empty();
+	}
+
 	void SetIsVisitedByParent(const std::shared_ptr<TNode<T>>& parent)
 	{
 		if (_parent == nullptr)
