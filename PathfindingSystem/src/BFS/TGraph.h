@@ -109,7 +109,7 @@ public:
 		if (!queueNodesToVisit.empty())
 		{
 			auto currentNode = queueNodesToVisit.front();
-			Functor.Visit(currentNode);
+			//Functor.Visit(currentNode);
 
 			if (currentNode == goalNode)
 				return; // Omg on a trouvé

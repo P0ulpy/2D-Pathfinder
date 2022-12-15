@@ -2,29 +2,68 @@
 
 #include "BFS/TNode.h"
 
+struct Heuristic
+{
+    static sf::Vector2i getDelta(sf::Vector2i source_, sf::Vector2i target_)
+    {
+        return{ abs(source_.x - target_.x),  abs(source_.y - target_.y) };
+    }
+
+    static double manhattan(sf::Vector2i source, sf::Vector2i target)
+    {
+        const auto& delta = std::move(getDelta(source, target));
+        return static_cast<double>(10 * (delta.x + delta.y));
+    }
+
+    static double euclidean(sf::Vector2i source_, sf::Vector2i target_)
+    {
+        const auto& delta = std::move(getDelta(source_, target_));
+        return static_cast<double>(10 * sqrt(pow(delta.x, 2) + pow(delta.y, 2)));
+    }
+
+    static double octagonal(sf::Vector2i source_, sf::Vector2i target_)
+    {
+        const auto& delta = std::move(getDelta(source_, target_));
+        return static_cast <double> (10 * (delta.x + delta.y) + (-6) * std::min(delta.x, delta.y));
+    }
+};
+
+template<typename NodeType>
 class AStar
 {
 public:
-    using SharedPtrNodeTile2D = std::shared_ptr<TNode<Tile2D>>;
+    using SharedPtrNode = std::shared_ptr<TNode<NodeType>>;
 
     AStar() = default;
 
-    static std::list<SharedPtrNodeTile2D> RunAStar(const SharedPtrNodeTile2D& startingNode, const SharedPtrNodeTile2D& goalNode)
+    template<typename HeuristicMethod>
+    static std::list<SharedPtrNode> RunAStar(const SharedPtrNode& startingNode, const SharedPtrNode& goalNode, HeuristicMethod& heuristic_compute)
     {
+        std::map<SharedPtrNode, SharedPtrNode> Parents;
+
+        SharedPtrNode currentNode = nullptr;
+
         /* list of node that need to be visited */
-        std::list<SharedPtrNodeTile2D> openedList;
+        std::list<SharedPtrNode> openedList;
 
         /* list of node that are already visited */
-        std::list<SharedPtrNodeTile2D> closedList;
+        std::list<SharedPtrNode> closedList;
+
+        std::list<SharedPtrNode> returnPath = {};
+
+        if (startingNode == nullptr || goalNode == nullptr)
+            return returnPath;
 
         openedList.push_back(startingNode);
 
         startingNode->ResetParent();
         goalNode->ResetParent();
 
+        bool targetReached = false;
+
         while (!openedList.empty())
         {
-            auto currentNode = openedList.front();
+            currentNode = *openedList.begin();
 
             /* Find node in openedList with lowest f */
             for (const auto& currNodeInList : openedList)
@@ -32,6 +71,12 @@ public:
 	            if (currNodeInList->GetContent().GetF() <= currentNode->GetContent().GetF()) {
                     currentNode = currNodeInList;
                 }
+            }
+
+            /* if found goalNode, we break */
+            if (currentNode == goalNode) {
+                targetReached = true;
+                break;
             }
 
             if (std::ranges::find(closedList, currentNode) == closedList.end())
@@ -44,39 +89,32 @@ public:
                 if (std::ranges::find(closedList, neighbor) == closedList.end())
                 {
                     neighbor->GetContent().SetG(currentNode->GetContent().g + 10.0);
-                    neighbor->GetContent().SetH(manhattan(neighbor->GetContent()._pos, goalNode->GetContent()._pos));
+                    neighbor->GetContent().SetH(Heuristic::manhattan(neighbor->GetContent()._pos, goalNode->GetContent()._pos));
 
-                    neighbor->SetIsVisitedByParent(currentNode);
+                    //neighbor->SetIsVisitedByParent(currentNode);
+                    Parents.insert({ neighbor, currentNode });
 
                     if (std::ranges::find(openedList, neighbor) == openedList.end())
                         openedList.push_back(neighbor);
-
-                    if (neighbor == goalNode)
-                    {
-                        std::list<SharedPtrNodeTile2D> path;
-                        auto current = neighbor;
-                        while (current != nullptr) {
-                            path.push_back(current);
-                            current = current->GetParent();
-                        }
-                        //path.reverse();
-                        return path;
-                    }
                 }
             }
         }
 
-        return std::list<SharedPtrNodeTile2D> {};
-    }
+        if (!targetReached) return returnPath;
 
-    static sf::Vector2i getDelta(sf::Vector2i source_, sf::Vector2i target_)
-    {
-        return{ abs(source_.x - target_.x),  abs(source_.y - target_.y) };
-    }
+        while (currentNode != nullptr) {
+            if (currentNode != startingNode)
+                returnPath.push_back(currentNode);
+            if (Parents.find(currentNode) == Parents.end())
+                break;
+            currentNode = Parents[currentNode];
+        }
 
-    static double manhattan(sf::Vector2i source, sf::Vector2i target)
-    {
-        const auto delta = std::move(getDelta(source, target));
-        return 10 * (delta.x + delta.y);
+        openedList.clear();
+        closedList.clear();
+
+        return returnPath;
     }
 };
+
+

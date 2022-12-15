@@ -7,7 +7,7 @@
 #include "src/AStar.h"
 
 constexpr int RAND_MAP_W = 50;
-constexpr int RAND_MAP_H = 25;
+constexpr int RAND_MAP_H = 50;
 
 constexpr int DEF_MAP_W = 12;
 constexpr int DEF_MAP_H = 7;
@@ -28,11 +28,12 @@ constexpr bool USE_DEF_MAP = false; // Set it to true to use the default map abo
 constexpr int FINAL_MAP_H = USE_DEF_MAP ? DEF_MAP_H : RAND_MAP_H;
 constexpr int FINAL_MAP_W = USE_DEF_MAP ? DEF_MAP_W : RAND_MAP_W;
 
+Tile2D tileMap2D[FINAL_MAP_H][FINAL_MAP_W]; // Used to construct a default graph easier
+
 int main()
 {
     using NodeTile2D = TNode<Tile2D>;
 
-    Tile2D tileMap2D[FINAL_MAP_H][FINAL_MAP_W]; // Used to construct a default graph easier
     TGraph<Tile2D> g;
 
     // =========== Construct default node map
@@ -42,7 +43,7 @@ int main()
     {
         for (int c = 0; c < FINAL_MAP_W; ++c)
         {
-            const auto isTraversable = static_cast<bool>((USE_DEF_MAP ? !DEF_MAP[l][c] : std::rand() % 6));
+            const auto isTraversable = static_cast<bool>((USE_DEF_MAP ? ~DEF_MAP[l][c] : std::rand() % 6));
             const auto newTile = Tile2D(c, l, isTraversable);
 
             tileMap2D[l][c] = newTile;
@@ -113,9 +114,9 @@ int main()
     queueNodesVisited.push(beginNode);
     queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
 
-    const auto startTimer1 = std::chrono::high_resolution_clock::now();
+    const auto startTimerBFS = std::chrono::high_resolution_clock::now();
     g.TraversalGraphRecursifBreathFirst(endNode, queueNodesVisited, functorBFSAllNodesVisited);
-    const auto endTimer1 = std::chrono::high_resolution_clock::now();
+    const auto endTimerBFS = std::chrono::high_resolution_clock::now();
 
     std::cout << "\nCustomLoggerNode: " << std::endl;
     g.VisitParentsFrom(endNode, customLoggerNode);
@@ -125,24 +126,42 @@ int main()
 
     g.VisitParentsFrom(endNode, functorBFSFinalPathNodes);
 
-    // =========== Run AStar
+    // =========== Reset Parents
     g.ResetParentsForAllNodes();
 
     std::cout << "\n\nAStar: " << std::endl;
 
-    const auto startTimer2 = std::chrono::high_resolution_clock::now();
-    const auto aStarResult = AStar::RunAStar(beginNode, endNode);
-    const auto endTimer2 = std::chrono::high_resolution_clock::now();
+    const auto startTimerAStarManhattan = std::chrono::high_resolution_clock::now();
+    const auto aStarManhattanResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::manhattan)>(beginNode, endNode, Heuristic::manhattan);
+    const auto endTimerAStarManhattan = std::chrono::high_resolution_clock::now();
 
     g.VisitParentsFrom(endNode, defaultLoggerNode);
 
+    // =========== Reset Parents
+    g.ResetParentsForAllNodes();
+
+    const auto startTimerAStarEuclidean = std::chrono::high_resolution_clock::now();
+    const auto aStarEuclideanResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::euclidean)>(beginNode, endNode, Heuristic::euclidean);
+    const auto endTimerAStarEuclidean = std::chrono::high_resolution_clock::now();
+
+    // =========== Reset Parents
+    g.ResetParentsForAllNodes();
+
+    const auto startTimerAStarOctagonal = std::chrono::high_resolution_clock::now();
+    const auto aStarOctagonalResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::octagonal)>(beginNode, endNode, Heuristic::octagonal);
+    const auto endTimerAStarOctagonal = std::chrono::high_resolution_clock::now();
+
     // =========== Display timers result
-    const auto durationTimer1 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer1 - startTimer1).count();
-    const auto durationTimer2 = std::chrono::duration_cast<std::chrono::microseconds>(endTimer2 - startTimer2).count();
+    const auto durationTimerBFS = std::chrono::duration_cast<std::chrono::microseconds>(endTimerBFS - startTimerBFS).count();
+    const auto durationTimerAStarManhattan = std::chrono::duration_cast<std::chrono::microseconds>(endTimerAStarManhattan - startTimerAStarManhattan).count();
+    const auto durationTimerAStarEuclidean = std::chrono::duration_cast<std::chrono::microseconds>(endTimerAStarEuclidean - startTimerAStarEuclidean).count();
+    const auto durationTimerAStarOctagonal = std::chrono::duration_cast<std::chrono::microseconds>(endTimerAStarOctagonal - startTimerAStarOctagonal).count();
 
     std::cout << std::endl << std::endl;
-    std::cout << "Duration timer BFS: " << durationTimer1 << " us. Node count in the path: " << static_cast<int>(functorBFSFinalPathNodes._listVisited.size()) << std::endl;
-    std::cout << "Duration timer AStar: " << durationTimer2 << " us. Node count in the path: " << static_cast<int>(aStarResult.size()) << std::endl;
+    std::cout << "Duration timer BFS: " << durationTimerBFS << " ms. Node count in the path: " << static_cast<int>(functorBFSFinalPathNodes._listVisited.size()) << std::endl;
+    std::cout << "Duration timer AStar manhattan: " << durationTimerAStarManhattan << " ms. Node count in the path: " << static_cast<int>(aStarManhattanResult.size()) << std::endl;
+    std::cout << "Duration timer AStar Euclidean: " << durationTimerAStarEuclidean << " ms. Node count in the path: " << static_cast<int>(aStarEuclideanResult.size()) << std::endl;
+    std::cout << "Duration timer AStar Octagonal: " << durationTimerAStarOctagonal << " ms. Node count in the path: " << static_cast<int>(aStarOctagonalResult.size()) << std::endl;
 
     return 0;
 }

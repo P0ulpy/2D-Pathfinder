@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-
 #include <list>
 #include <algorithm>
 #include <vector>
