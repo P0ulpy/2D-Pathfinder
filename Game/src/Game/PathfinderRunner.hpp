@@ -26,7 +26,6 @@ public:
         std::chrono::time_point<std::chrono::steady_clock> endTimer;
         std::list<std::shared_ptr<TNode<Tile2D>>> visitedList;
         std::list<std::shared_ptr<TNode<Tile2D>>> pathList;
-        bool valid = false;
     };
 
     void Reset(const sf::Vector2u& mapSize)
@@ -84,12 +83,14 @@ public:
 
         graphMap->GetGraph().ResetParentsForAllNodes();
 
+        const auto durationTimerBFS = std::chrono::duration_cast<std::chrono::microseconds>(endTimer - startTimer).count();
+        std::cout << "Duration timer BFS: " << durationTimerBFS << " ms. Node count in the path: " << static_cast<int>(functorBFSFinalPathNodes._listVisited.size()) << std::endl;
+
         return {
             startTimer,
             endTimer,
             functorBFSVisited._listVisited,
-            functorBFSFinalPathNodes._listVisited,
-            true
+            functorBFSFinalPathNodes._listVisited
         };
     }
 
@@ -98,6 +99,9 @@ public:
         const auto startTimer = std::chrono::high_resolution_clock::now();
         const auto aStarManhattanResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::manhattan)>(beginNode, endNode, Heuristic::manhattan, functorAStarManhattanVisited);
         const auto endTimer = std::chrono::high_resolution_clock::now();
+
+        const auto durationTimerAStarManhattan = std::chrono::duration_cast<std::chrono::microseconds>(endTimer - startTimer).count();
+        std::cout << "Duration timer AStar manhattan: " << durationTimerAStarManhattan << " ms. Node count in the path: " << static_cast<int>(aStarManhattanResult.size()) << std::endl;
 
         return {
             startTimer,
@@ -113,6 +117,9 @@ public:
         const auto startTimer = std::chrono::high_resolution_clock::now();
         const auto aStarEuclideanResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::euclidean)>(beginNode, endNode, Heuristic::euclidean, functorAStarEuclideanVisited);
         const auto endTimer = std::chrono::high_resolution_clock::now();
+
+        const auto durationTimerAStarEuclidean = std::chrono::duration_cast<std::chrono::microseconds>(endTimer - startTimer).count();
+        std::cout << "Duration timer AStar Euclidean: " << durationTimerAStarEuclidean << " ms. Node count in the path: " << static_cast<int>(aStarEuclideanResult.size()) << std::endl << std::endl;
 
         return {
             startTimer,

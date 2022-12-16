@@ -106,6 +106,12 @@ int main()
             pathfinderRunner.Reset(mapSize);
             pathfinderResults = {};
         }
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::T))
+        {
+            pathfinderRunner.Reset(mapSize);
+            pathfinderRunner.SetRandomWall();
+            pathfinderResults = {};
+        }
 
         // Render
 
