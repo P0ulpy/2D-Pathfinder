@@ -113,33 +113,27 @@ int main()
     // =========== Reset Parents
     //g.ResetParentsForAllNodes();
 
-    const auto startTimerAStarOctagonal = std::chrono::high_resolution_clock::now();
-    const auto aStarOctagonalResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::octagonal)>(beginNode, endNode, Heuristic::octagonal);
-    const auto endTimerAStarOctagonal = std::chrono::high_resolution_clock::now();
-
     // =========== Display timers result
     const auto durationTimerBFS = std::chrono::duration_cast<std::chrono::microseconds>(endTimerBFS - startTimerBFS).count();
     const auto durationTimerAStarManhattan = std::chrono::duration_cast<std::chrono::microseconds>(endTimerAStarManhattan - startTimerAStarManhattan).count();
     const auto durationTimerAStarEuclidean = std::chrono::duration_cast<std::chrono::microseconds>(endTimerAStarEuclidean - startTimerAStarEuclidean).count();
-    const auto durationTimerAStarOctagonal = std::chrono::duration_cast<std::chrono::microseconds>(endTimerAStarOctagonal - startTimerAStarOctagonal).count();
 
     std::cout << std::endl << std::endl;
     std::cout << "Duration timer BFS: " << durationTimerBFS << " ms. Node count in the path: " << static_cast<int>(functorBFSFinalPathNodes._listVisited.size()) << std::endl;
     std::cout << "Duration timer AStar manhattan: " << durationTimerAStarManhattan << " ms. Node count in the path: " << static_cast<int>(aStarManhattanResult.size()) << std::endl;
     std::cout << "Duration timer AStar Euclidean: " << durationTimerAStarEuclidean << " ms. Node count in the path: " << static_cast<int>(aStarEuclideanResult.size()) << std::endl;
-    std::cout << "Duration timer AStar Octagonal: " << durationTimerAStarOctagonal << " ms. Node count in the path: " << static_cast<int>(aStarOctagonalResult.size()) << std::endl;
 
     std::cout << "Let's see the A* with manhattan heuristic path : " << std::endl;
 
-    Utilities::displayPath<FINAL_MAP_H, FINAL_MAP_W>(aStarManhattanResult, tileMap2D);
+    Utilities::displayPathTile2D(aStarManhattanResult, FINAL_MAP_W, FINAL_MAP_H, g);
 
     std::cout << "Let's see the A* with euclidean heuristic path : " << std::endl;
 
-    Utilities::displayPath<FINAL_MAP_H, FINAL_MAP_W>(aStarEuclideanResult, tileMap2D);
+    Utilities::displayPathTile2D(aStarEuclideanResult, FINAL_MAP_W, FINAL_MAP_H, g);
 
     std::cout << "\nNow let's see the BFS path : " << std::endl;
 
-    Utilities::displayPath<FINAL_MAP_H, FINAL_MAP_W>(bfsResult, tileMap2D);
+    Utilities::displayPathTile2D(bfsResult, FINAL_MAP_W, FINAL_MAP_H, g);
 
     return 0;
 }

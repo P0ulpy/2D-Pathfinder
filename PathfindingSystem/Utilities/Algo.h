@@ -148,8 +148,7 @@ namespace Utilities
 {
     using NodeSharedPtrTile2D = NodeSharedPtr<Tile2D>;
 
-    template<int height, int width>
-    void displayPath(std::list<NodeSharedPtrTile2D> path, Tile2D map[height][width])
+    void displayPathTile2D(std::list<NodeSharedPtrTile2D> path,const int width, const int height, GraphMap2D& g)
     {
         bool isFound = false;
         for (int y = 0; y < height; ++y)
@@ -157,14 +156,17 @@ namespace Utilities
             for (int x = 0; x < width; ++x)
             {
                 isFound = false;
+                if (!g.GetGraph().FindNode(Tile2D(x, y))->GetContent()._isTraversable)
+                {
+                    std::cout << " X ";
+                    continue;
+                }
+                
                 for (auto& it : path)
                 {
                     if (it->GetContent()._pos == Vec2i(x, y))
                     {
-                        if(it->GetContent()._isTraversable )
-                            std::cout << " O ";
-                        else 
-                            std::cout << " X ";
+                        std::cout << " O ";    
                         isFound = true;
                         break;
                     }
