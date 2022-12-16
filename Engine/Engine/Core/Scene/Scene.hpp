@@ -9,7 +9,6 @@
 
 #include "../Base.hpp"
 #include "../../ECS/EntitiesRegistry/EntitiesRegistry.hpp"
-#include "../../ECS/Entity/Entity.hpp"
 
 namespace Engine
 {
@@ -18,8 +17,8 @@ namespace Engine
     class Scene
     {
     public:
-        Scene();
-        ~Scene();
+        Scene() = default;
+        ~Scene() = default;
 
         void OnStart();
         void OnUpdate(Timestep ts);
@@ -31,6 +30,8 @@ namespace Engine
         void DestroyEntity(Entity entity);
 
         Entity GetEntityByHandle(const EntityHandle& handle);
+
+        inline EntitiesRegistry* GetEntitiesRegistry() { return &m_registry; }
 
     private:
         EntitiesRegistry m_registry;

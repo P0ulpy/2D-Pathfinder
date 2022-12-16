@@ -35,14 +35,14 @@ void Engine::EngineApplication::Run()
     while (m_window.isOpen() && m_running)
     {
         Timestep time = Time::GetTime();
-        Timestep timestep = time - m_LastFrameTime;
+        Timestep timeStep = time - m_LastFrameTime;
 
         // TODO : Process inputs
         // Input::Process(m_window);
 
         for(ApplicationLayer* layer : m_layers)
         {
-            layer->OnUpdate(timestep);
+            layer->OnUpdate(timeStep);
         }
 
         // TODO : Support ImGui

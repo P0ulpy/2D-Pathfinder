@@ -16,7 +16,8 @@ set(ENGINE_HEADERS
         Engine/Renderer/AllRenderComponents.hpp
         Engine/Core/RTTI/RTTI.hpp
         Engine/ECS/EntitiesRegistry/IComponentSystem.hpp
-        Engine/ECS/EntitiesRegistry/ComponentSystem.hpp)
+        Engine/ECS/EntitiesRegistry/ComponentSystem.hpp
+        Engine/AssetLoader/AssetLoader.hpp)
 
 set(ENGINE_SOURCES
         Engine/Core/Application/EngineApplication.cpp
@@ -29,7 +30,9 @@ set(ENGINE_SOURCES
         Engine/Core/Logger/Logger.cpp
         Engine/Core/Application/SceneLayer.cpp
         Engine/Renderer/Renderer.cpp
-        Engine/ECS/EntitiesRegistry/ComponentSystem.cpp)
+        Engine/ECS/EntitiesRegistry/ComponentSystem.cpp
+        Engine/AssetLoader/AssetLoader.cpp
+        Engine/Core/Time.cpp)
 
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 

@@ -35,8 +35,8 @@ public:
 
     AStar() = default;
 
-    template<typename HeuristicMethod>
-    static std::list<SharedPtrNode> RunAStar(const SharedPtrNode& startingNode, const SharedPtrNode& goalNode, HeuristicMethod& heuristic_compute)
+    template<typename HeuristicMethod, typename Callable>
+    static std::list<SharedPtrNode> RunAStar(const SharedPtrNode& startingNode, const SharedPtrNode& goalNode, HeuristicMethod& heuristic_compute, Callable& functor)
     {
         std::map<SharedPtrNode, SharedPtrNode> Parents;
 
@@ -64,6 +64,8 @@ public:
             {
 	            if (currNodeInList->GetContent().GetF() <= currentNode->GetContent().GetF()) {
                     currentNode = currNodeInList;
+
+                    functor.Visit(currentNode);
                 }
             }
 

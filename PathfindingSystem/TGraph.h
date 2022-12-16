@@ -1,8 +1,10 @@
 #pragma once
 
 #include <cassert>
+#include <iostream>
 
 #include "TNode.h"
+#include "Utilities/NodeElements.h"
 
 template<typename T>
 using NodeSharedPtr = std::shared_ptr<TNode<T>>;
@@ -252,6 +254,11 @@ public:
 		//return !nodeTile2D->HasAnyNeighbors();
 		return !nodeTile2D->GetContent()._isTraversable;
 	}
+
+    bool IsTileAWall(const Tile2D& tile2D)
+    {
+        return !_graph.FindNode(tile2D)->GetContent()._isTraversable;
+    }
 
 	TGraph<Tile2D>& GetGraph() { return _graph; }
 

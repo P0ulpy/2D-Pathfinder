@@ -17,9 +17,11 @@ namespace Engine
         SceneLayer() = default;
         SceneLayer(sf::RenderTarget* renderTarget, const std::string_view& name = "Layer");
 
-        void OnAttach() override;
-        void OnDetach() override;
+        virtual void OnAttach() override {};
+        virtual void OnDetach() override {};
         void OnUpdate(Timestep ts) override;
+
+        inline Scene& GetScene() { return m_scene; }
 
     private:
         Scene m_scene;

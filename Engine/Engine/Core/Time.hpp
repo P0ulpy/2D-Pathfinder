@@ -5,10 +5,10 @@
 #ifndef PATHFINDER_TIME_HPP
 #define PATHFINDER_TIME_HPP
 
+#include "Base.hpp"
+
 namespace Engine
 {
-    // TODO : Implement Time class
-
     struct Time
     {
         static Timestep GetTime();
