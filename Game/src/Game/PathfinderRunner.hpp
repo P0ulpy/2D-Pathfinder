@@ -107,8 +107,7 @@ public:
             startTimer,
             endTimer,
             functorAStarManhattanVisited._listVisited,
-            aStarManhattanResult,
-            true
+            aStarManhattanResult
         };
     }
 
@@ -125,8 +124,7 @@ public:
             startTimer,
             endTimer,
             functorAStarEuclideanVisited._listVisited,
-            aStarEuclideanResult,
-            true
+            aStarEuclideanResult
         };
     }
 
