@@ -133,6 +133,10 @@ int main()
 
     Utilities::displayPath<FINAL_MAP_H, FINAL_MAP_W>(aStarManhattanResult, tileMap2D);
 
+    std::cout << "Let's see the A* with euclidean heuristic path : " << std::endl;
+
+    Utilities::displayPath<FINAL_MAP_H, FINAL_MAP_W>(aStarEuclideanResult, tileMap2D);
+
     std::cout << "\nNow let's see the BFS path : " << std::endl;
 
     Utilities::displayPath<FINAL_MAP_H, FINAL_MAP_W>(bfsResult, tileMap2D);

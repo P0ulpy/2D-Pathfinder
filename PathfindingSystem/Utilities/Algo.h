@@ -16,20 +16,14 @@ struct Heuristic
 
     static double manhattan(Vec2i source, Vec2i target)
     {
-        const auto& delta = std::move(getDelta(source, target));
+        const auto& delta = getDelta(source, target);
         return static_cast<double>(10 * (delta.x + delta.y));
     }
 
     static double euclidean(Vec2i source_, Vec2i target_)
     {
-        const auto& delta = std::move(getDelta(source_, target_));
+        const auto& delta = getDelta(source_, target_);
         return static_cast<double>(10 * sqrt(pow(delta.x, 2) + pow(delta.y, 2)));
-    }
-
-    static double octagonal(Vec2i source_, Vec2i target_)
-    {
-        const auto& delta = std::move(getDelta(source_, target_));
-        return static_cast <double> (10 * (delta.x + delta.y) + (-6) * std::min(delta.x, delta.y));
     }
 };
 
@@ -114,7 +108,6 @@ public:
                 }
             }
         }
-
         return returnPath;
     }
 };
