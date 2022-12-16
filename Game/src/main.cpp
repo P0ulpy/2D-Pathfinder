@@ -86,17 +86,17 @@ int main()
     const auto aStarManhattanResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::manhattan)>(beginNode, endNode, Heuristic::manhattan);
     const auto endTimerAStarManhattan = std::chrono::high_resolution_clock::now();
 
-    g.GetGraph().VisitParentsFrom(endNode, defaultLoggerNode);
+    //g.GetGraph().VisitParentsFrom(endNode, defaultLoggerNode);
 
     // =========== Reset Parents
-    g.ResetParentsForAllNodes();
+    //g.ResetParentsForAllNodes();
 
     const auto startTimerAStarEuclidean = std::chrono::high_resolution_clock::now();
     const auto aStarEuclideanResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::euclidean)>(beginNode, endNode, Heuristic::euclidean);
     const auto endTimerAStarEuclidean = std::chrono::high_resolution_clock::now();
 
     // =========== Reset Parents
-    g.ResetParentsForAllNodes();
+    //g.ResetParentsForAllNodes();
 
     const auto startTimerAStarOctagonal = std::chrono::high_resolution_clock::now();
     const auto aStarOctagonalResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::octagonal)>(beginNode, endNode, Heuristic::octagonal);
