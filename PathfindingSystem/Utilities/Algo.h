@@ -94,13 +94,11 @@ public:
             {
                 if (std::ranges::find(closedList, neighbor) == closedList.end())
                 {
-                    //neighbor->GetContent().SetG(currentNode->GetContent().g + 1.0);
                     auto newContent = NodeType(neighbor->GetContent());
                     newContent.SetG(currentNode->GetContent().g + 1.0);
                     newContent.SetH(heuristic_compute(neighbor->GetContent()._pos, goalNode->GetContent()._pos));
                     neighbor->SetContent(newContent);
 
-                    //neighbor->SetIsVisitedByParent(currentNode);
                     Parents.insert({ neighbor, currentNode });
 
                     if (std::ranges::find(openedList, neighbor) == openedList.end())
@@ -150,15 +148,23 @@ namespace Utilities
 
     void displayPathTile2D(std::list<NodeSharedPtrTile2D> path,const int width, const int height, GraphMap2D& g)
     {
+        for (int i = 0; i < width + 2; ++i)
+        {
+            std::cout << "X ";
+        }
+        std::cout << std::endl;
+
         bool isFound = false;
         for (int y = 0; y < height; ++y)
         {
+            std::cout << "X ";
+
             for (int x = 0; x < width; ++x)
             {
                 isFound = false;
                 if (!g.GetGraph().FindNode(Tile2D(x, y))->GetContent()._isTraversable)
                 {
-                    std::cout << " X ";
+                    std::cout << "X ";
                     continue;
                 }
                 
@@ -166,15 +172,23 @@ namespace Utilities
                 {
                     if (it->GetContent()._pos == Vec2i(x, y))
                     {
-                        std::cout << " O ";    
+                        std::cout << "o ";
                         isFound = true;
                         break;
                     }
                 }
                 if (!isFound)
-                    std::cout << " . "; // Just to see the map
+                    std::cout << "  "; // Just to see the map
             }
+
+            std::cout << "X ";
             std::cout << std::endl;
         }
+
+        for (int i = 0; i < width + 2; ++i)
+        {
+            std::cout << "X ";
+        }
+        std::cout << std::endl;
     }
 }
