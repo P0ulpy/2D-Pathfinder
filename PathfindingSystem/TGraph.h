@@ -11,9 +11,6 @@ template<typename T>
 using NodeWeakPtr = std::weak_ptr<TNode<T>>;
 
 template<typename T>
-using NodePtr = TNode<T>*;
-
-template<typename T>
 class TGraph : public std::list<NodeSharedPtr<T>>
 {
 public:
@@ -71,7 +68,7 @@ public:
 
 	void ResetParentsForAllNodes()
 	{
-		std::for_each(this->begin(), this->end(), [](const auto& node)
+		std::for_each(this->begin(), this->end(), []( auto& node)
 		{
 			node->ResetParent();
 		});
