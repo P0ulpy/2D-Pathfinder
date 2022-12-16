@@ -1,6 +1,6 @@
 set(GAME_HEADERS
         includes/main.hpp
-        )
+        GraphMap2D.h)
 
 set(GAME_SOURCES
         src/main.cpp

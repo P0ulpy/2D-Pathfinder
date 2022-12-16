@@ -3,7 +3,8 @@ set(PATHFINDING_SYSTEM_HEADERS
         Utilities/NodeFunctors.h
         Utilities/NodeElements.h
         TGraph.h
-        TNode.h)
+        TNode.h
+        )
 
 set(PATHFINDING_SYSTEM_SOURCES
         TNode.cpp
