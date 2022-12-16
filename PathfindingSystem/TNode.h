@@ -81,7 +81,7 @@ public:
 		_content = content;
 	}
 
-	NodeType GetContent() 
+	NodeType GetContent() const
 	{
 		return _content;
 	}

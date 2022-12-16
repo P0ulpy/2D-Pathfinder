@@ -77,7 +77,7 @@ public:
 	NodeSharedPtr<T> FindNode(const T& nodeContent)
 	{
 		// Find in the list if the node is contained
-		 auto it = std::find_if(this->begin(), this->end(), [&nodeContent]( auto& pNode)
+		const auto it = std::find_if(this->begin(), this->end(), [&nodeContent](const auto& pNode)
 		{
 			return pNode->GetContent() == nodeContent;
 		});
@@ -86,7 +86,7 @@ public:
 		return (*it);
 	}
 
-	NodeSharedPtr<T>* FindNode(const TNode<T>& node)
+	NodeSharedPtr<T> FindNode(const TNode<T>& node)
 	{
 		return FindNode(node.GetContent());
 	}
@@ -96,7 +96,7 @@ public:
 	{
 		Functor.Visit(currNode);
 
-		 auto& parentNode = currNode->GetParent();
+		const auto& parentNode = currNode->GetParent();
 		if (parentNode != nullptr && currNode != parentNode)
 		{
 			VisitParentsFrom(parentNode, Functor);
