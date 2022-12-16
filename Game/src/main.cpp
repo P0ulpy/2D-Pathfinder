@@ -6,7 +6,7 @@
 
 #include "TGraph.h"
 
-constexpr int RAND_MAP_W = 10;
+constexpr int RAND_MAP_W = 20;
 constexpr int RAND_MAP_H = 10;
 
 constexpr int DEF_MAP_W = 12;
@@ -66,7 +66,7 @@ int main()
 
 	auto queueNodesVisited = std::queue<NodeSharedPtrTile2D>();
     queueNodesVisited.push(beginNode);
-    //queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
+    queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
 
     const auto startTimerBFS = std::chrono::high_resolution_clock::now();
     BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, functorBFSAllNodesVisited);

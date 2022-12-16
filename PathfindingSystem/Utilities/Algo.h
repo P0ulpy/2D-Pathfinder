@@ -101,8 +101,10 @@ public:
                 if (std::ranges::find(closedList, neighbor) == closedList.end())
                 {
                     //neighbor->GetContent().SetG(currentNode->GetContent().g + 1.0);
-                    neighbor->GetContent().SetG(1.0);
-                    neighbor->GetContent().SetH(heuristic_compute(neighbor->GetContent()._pos, goalNode->GetContent()._pos));
+                    auto newContent = NodeType(neighbor->GetContent());
+                    newContent.SetG(currentNode->GetContent().g + 1.0);
+                    newContent.SetH(heuristic_compute(neighbor->GetContent()._pos, goalNode->GetContent()._pos));
+                    neighbor->SetContent(newContent);
 
                     //neighbor->SetIsVisitedByParent(currentNode);
                     Parents.insert({ neighbor, currentNode });
@@ -162,16 +164,14 @@ namespace Utilities
             for (int x = 0; x < width; ++x)
             {
                 isFound = false;
-                if (!map[y][x]._isTraversable)
-                {
-                    std::cout << " X ";
-                    continue;
-                }
                 for (auto& it : path)
                 {
                     if (it->GetContent()._pos == Vec2i(x, y))
                     {
-                        std::cout << " O "; // Just to see the map
+                        if(it->GetContent()._isTraversable )
+                            std::cout << " O ";
+                        else 
+                            std::cout << " X ";
                         isFound = true;
                         break;
                     }
