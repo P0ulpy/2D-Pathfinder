@@ -58,7 +58,7 @@ public:
 		if (IsAlreadyNeighbor(*pNode))
 			return;
 
-		assert(!IsAlreadyNeighbor(*pNode) && "Neighbour already added");
+		//assert(!IsAlreadyNeighbor(*pNode) && "Neighbour already added");
 
 		_neighbors.push_back(std::move(pNode));
 		if constexpr (sizeof...(args) > 0)

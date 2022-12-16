@@ -7,6 +7,7 @@
 
 #include "../../Core/UUID.hpp"
 #include "../../Core/RTTI/RTTI.hpp"
+#include "../Entity/Entity.hpp"
 
 namespace Engine
 {
@@ -24,11 +25,17 @@ namespace Engine
         DECLARE_RTTI(Component, NoRTTIAncestor)
 
     public:
-        virtual void OnAwake();
-        virtual void OnStart();
-        virtual void OnUpdate(const float& deltaTime);
-        virtual void OnImGuiRender();
-        virtual void OnDestroy();
+
+        /* Implementable Component Events methods
+        void OnAwake();
+        void OnStart();
+        void OnUpdate(const float& deltaTime);
+        void OnRender(sf::RenderTarget &renderTarget);
+        void OnImGuiRender();
+        void OnDestroy();
+        */
+
+        [[nodiscard]] Entity GetEntity() const { return m_entity; }
 
     protected:
         Component() = default;
@@ -36,6 +43,7 @@ namespace Engine
 
     private:
         ComponentHandle m_handle = ComponentHandle::Null;
+        Entity m_entity { EntityHandle::Null, nullptr };
 
         friend class EntitiesRegistry;
 

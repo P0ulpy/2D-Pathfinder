@@ -6,9 +6,11 @@
 
 namespace Engine
 {
+    /*
     void Component::OnAwake() {}
     void Component::OnStart() {}
     void Component::OnUpdate(const float &deltaTime) {}
     void Component::OnImGuiRender() {}
     void Component::OnDestroy() {}
+    */
 }

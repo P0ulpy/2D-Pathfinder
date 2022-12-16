@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BFS/TNode.h"
+#include "src/BFS/BFSUtils.h"
 
 class AStar
 {

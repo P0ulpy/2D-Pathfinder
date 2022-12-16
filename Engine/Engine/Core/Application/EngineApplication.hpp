@@ -22,6 +22,8 @@ namespace Engine
         void PushLayer(ApplicationLayer* layer);
         void RemoveLayer(ApplicationLayer* layer);
 
+        inline SceneLayer& GetSceneLayer() { return m_sceneLayer; }
+
     private:
         sf::RenderWindow m_window;
 

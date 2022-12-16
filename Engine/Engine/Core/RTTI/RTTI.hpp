@@ -9,8 +9,8 @@
 #include <utility>
 
 #define DECLARE_RTTI(ClassName, ParentType) \
-    static RTTI* getClassRTTI() { static RTTI rtti{#ClassName, ParentType::getClassRTTI()}; return &rtti; } \
-    virtual RTTI* getInstanceRTTI() { return getClassRTTI(); }
+    static Engine::RTTI* getClassRTTI() { static Engine::RTTI rtti{#ClassName, ParentType::getClassRTTI()}; return &rtti; } \
+    virtual Engine::RTTI* getInstanceRTTI() { return getClassRTTI(); }
 
 namespace Engine
 {

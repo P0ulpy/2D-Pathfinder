@@ -8,7 +8,7 @@ struct Tile2D
     Tile2D(int x, int y, bool isTraversable = true) : _pos(x, y), _isTraversable(isTraversable) {}
     Tile2D(const sf::Vector2i point, bool isWall = true) : _pos(point.x, point.y), _isTraversable(isWall) {}
 
-    sf::Vector2i _pos{ 0, 0 };
+    sf::Vector2i _pos { 0, 0 };
     bool _isTraversable{ false }; // Could be replaced by an int _weight
 
     /* distance from the starting node to a given node */
