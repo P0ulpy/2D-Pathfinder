@@ -6,8 +6,8 @@
 
 #include "TGraph.h"
 
-constexpr int RAND_MAP_W = 20;
-constexpr int RAND_MAP_H = 10;
+constexpr int RAND_MAP_W = 40;
+constexpr int RAND_MAP_H = 15;
 
 constexpr int DEF_MAP_W = 12;
 constexpr int DEF_MAP_H = 7;
@@ -45,73 +45,44 @@ int main()
     const auto beginNode = g.GetGraph().FindNode(Tile2D(0,0));
     const auto endNode = g.GetGraph().FindNode(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));
 
-    /*const auto& beginNode = g.FindNode(Tile2D(0,0));
-    const auto& endNode = g.FindNode(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));*/
-
+    // =========== Init functors to visit nodes if needed
     using NodeSharedPtrTile2D = NodeSharedPtr<Tile2D>;
 
-    const std::function<void(NodeSharedPtrTile2D)> testFunctionLoggerNode = [](const NodeSharedPtrTile2D& node)
+    const std::function<void(NodeSharedPtrTile2D)> functionStringLoggerNode = [](const NodeSharedPtrTile2D& node)
     {
-        std::cout << node->GetContent()._isTraversable;
+        std::cout << node->GetContent() << " -> ";
     };
 
-    FunctorLoggerNodes defaultLoggerNode;
-    FunctorVisitedList<Tile2D> functorBFSAllNodesVisited(FINAL_MAP_H * FINAL_MAP_W);
+    FunctorEmpty functorEmpty;
     FunctorVisitedList<Tile2D> functorBFSFinalPathNodes;
-    FunctorCustomLoggerNodes<Tile2D> customLoggerNode(testFunctionLoggerNode);
+    FunctorCustomLoggerNodes customLoggerNode(functionStringLoggerNode);
 
-    // =========== Run BFS
-    std::cout << std::endl << std::endl;
-    std::cout << "BFS: " << std::endl;
-
+    // =========== Init BFS
 	auto queueNodesVisited = std::queue<NodeSharedPtrTile2D>();
     queueNodesVisited.push(beginNode);
     queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
 
+    // =========== Run BFS
     const auto startTimerBFS = std::chrono::high_resolution_clock::now();
-    BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, functorBFSAllNodesVisited);
+    BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, functorEmpty);
     const auto endTimerBFS = std::chrono::high_resolution_clock::now();
 
-    //std::cout << "\nCustomLoggerNode: " << std::endl;
-    //g.GetGraph().VisitParentsFrom(endNode, customLoggerNode);
-
-    std::cout << "\n\nDefautlLoggerNode: " << std::endl;
-    g.GetGraph().VisitParentsFrom(endNode, defaultLoggerNode);
-
     g.GetGraph().VisitParentsFrom(endNode, functorBFSFinalPathNodes);
+    std::ranges::reverse(functorBFSFinalPathNodes._listVisited);
 
-    /* add the path in a list for BFS result */
-    auto iterateNode = endNode;
-    std::list<NodeSharedPtrTile2D> bfsResult = {};
-    beginNode->ResetParent();
-
-    while (iterateNode != nullptr)
-    {
-        bfsResult.push_back(iterateNode);
-        iterateNode = iterateNode->GetParent();
-    }
-    std::reverse(bfsResult.begin(), bfsResult.end());
-
-    /* reset Parents */
     g.GetGraph().ResetParentsForAllNodes();
 
-    std::cout << "\n\nAStar: " << std::endl;
-
+    // =========== Run AStar manhattan
     const auto startTimerAStarManhattan = std::chrono::high_resolution_clock::now();
     const auto aStarManhattanResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::manhattan)>(beginNode, endNode, Heuristic::manhattan);
     const auto endTimerAStarManhattan = std::chrono::high_resolution_clock::now();
 
-    //g.GetGraph().VisitParentsFrom(endNode, defaultLoggerNode);
-
-    // =========== Reset Parents
-    //g.ResetParentsForAllNodes();
+    // =========== Run AStar euclidean
+    g.GetGraph().ResetParentsForAllNodes();
 
     const auto startTimerAStarEuclidean = std::chrono::high_resolution_clock::now();
     const auto aStarEuclideanResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::euclidean)>(beginNode, endNode, Heuristic::euclidean);
     const auto endTimerAStarEuclidean = std::chrono::high_resolution_clock::now();
-
-    // =========== Reset Parents
-    //g.ResetParentsForAllNodes();
 
     // =========== Display timers result
     const auto durationTimerBFS = std::chrono::duration_cast<std::chrono::microseconds>(endTimerBFS - startTimerBFS).count();
@@ -119,21 +90,23 @@ int main()
     const auto durationTimerAStarEuclidean = std::chrono::duration_cast<std::chrono::microseconds>(endTimerAStarEuclidean - startTimerAStarEuclidean).count();
 
     std::cout << std::endl << std::endl;
+    std::cout << "Pathfinding calculation results: " << std::endl;
     std::cout << "Duration timer BFS: " << durationTimerBFS << " ms. Node count in the path: " << static_cast<int>(functorBFSFinalPathNodes._listVisited.size()) << std::endl;
     std::cout << "Duration timer AStar manhattan: " << durationTimerAStarManhattan << " ms. Node count in the path: " << static_cast<int>(aStarManhattanResult.size()) << std::endl;
-    std::cout << "Duration timer AStar Euclidean: " << durationTimerAStarEuclidean << " ms. Node count in the path: " << static_cast<int>(aStarEuclideanResult.size()) << std::endl;
+    std::cout << "Duration timer AStar Euclidean: " << durationTimerAStarEuclidean << " ms. Node count in the path: " << static_cast<int>(aStarEuclideanResult.size()) << std::endl << std::endl;
 
-    std::cout << "Let's see the A* with manhattan heuristic path : " << std::endl;
+    // =========== Some algo map result displays
+    std::cout << "\nLet's see the A* with manhattan heuristic path : " << std::endl;
 
     Utilities::displayPathTile2D(aStarManhattanResult, FINAL_MAP_W, FINAL_MAP_H, g);
 
-    std::cout << "Let's see the A* with euclidean heuristic path : " << std::endl;
+    std::cout << "\nLet's see the A* with euclidean heuristic path : " << std::endl;
 
     Utilities::displayPathTile2D(aStarEuclideanResult, FINAL_MAP_W, FINAL_MAP_H, g);
 
     std::cout << "\nNow let's see the BFS path : " << std::endl;
 
-    Utilities::displayPathTile2D(bfsResult, FINAL_MAP_W, FINAL_MAP_H, g);
+    Utilities::displayPathTile2D(functorBFSFinalPathNodes._listVisited, FINAL_MAP_W, FINAL_MAP_H, g);
 
     return 0;
 }
@@ -155,7 +128,7 @@ void InitMap(GraphMap2D& g)
     }
     else
     {
-        g.SetRandomWallsForMap(7);
+        g.SetRandomWallsForMap(6);
 
         g.RemoveWallAt(Tile2D(0, 0));
         g.RemoveWallAt(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));
