@@ -1,27 +1,22 @@
 #pragma once
 
 #include <memory>
-
 #include <list>
+#include <ostream>
+#include <cassert>  
 #include <algorithm>
-#include <vector>
 
-// Le node
 template<typename T>
 class TNode
 {
+public:
 	template<typename P>
 	using NodeSharedPtr = std::shared_ptr<TNode<P>>;
 
-public:
-	TNode() : TNode(T())
-	{ }
+	TNode() : TNode(T()) { }
 
-	TNode(const T& content/* = T()*/) // Can't make the difference between default contructor and copy constructor with T() as default parameter
-		: _content(content)
-	{
-
-	}
+	TNode(const T& content)
+		: _content(content) { }
 
 	TNode(const TNode& node) : _content(node._content)
 	{
@@ -53,12 +48,12 @@ public:
 
 
 	template<typename...Args>
-	void AddNeighbors(NodeSharedPtr<T> pNode, Args... args)
+	void AddNeighbors(NodeSharedPtr<T> pNode, Args ... args)
 	{
 		if (IsAlreadyNeighbor(*pNode))
 			return;
 
-		//assert(!IsAlreadyNeighbor(*pNode) && "Neighbour already added");
+		assert(!IsAlreadyNeighbor(*pNode) && "Neighbor already added");
 
 		_neighbors.push_back(std::move(pNode));
 		if constexpr (sizeof...(args) > 0)
@@ -68,9 +63,9 @@ public:
 	void RemoveNeighbor(NodeSharedPtr<T> neighborToRemove)
 	{
 		_neighbors.remove_if([&neighborToRemove, this](const auto currNeighbor)
-		{
-			return neighborToRemove->_content == currNeighbor->_content && neighborToRemove->IsAlreadyNeighbor(*this);
-		});
+			{
+				return neighborToRemove->_content == currNeighbor->_content && neighborToRemove->IsAlreadyNeighbor(*this);
+			});
 	}
 
 	void ClearAllNeighbors()
@@ -98,6 +93,11 @@ public:
 		return _neighbors;
 	}
 
+	bool HasAnyNeighbors() const
+	{
+		return !_neighbors.empty();
+	}
+
 	void SetIsVisitedByParent(const std::shared_ptr<TNode<T>>& parent)
 	{
 		if (_parent == nullptr)
@@ -106,18 +106,29 @@ public:
 		}
 	}
 
-	bool IsVisitedByParent() const { return _parent != nullptr; }
-	NodeSharedPtr<T> GetParent() const { return _parent; }
-	void ResetParent() { _parent.reset(); }
+	bool IsVisitedByParent() const
+	{
+		return _parent != nullptr;
+	}
+
+	NodeSharedPtr<T> GetParent() const
+	{
+		return _parent;
+	}
+
+	void ResetParent()
+	{
+		_parent.reset();
+	}
 
 private:
 
 	bool IsAlreadyNeighbor(const TNode& nodeNeighborToFind) const
 	{
 		const auto it = std::find_if(_neighbors.begin(), _neighbors.end(), [&nodeNeighborToFind](const auto pNeighbor)
-		{
-			return nodeNeighborToFind._content == pNeighbor->_content;
-		});
+			{
+				return nodeNeighborToFind._content == pNeighbor->_content;
+			});
 
 		return it != _neighbors.end();
 	}

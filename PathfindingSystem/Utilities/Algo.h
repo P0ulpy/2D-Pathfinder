@@ -1,12 +1,14 @@
 #pragma once
 
-#include "BFS/TNode.h"
-#include "src/BFS/BFSUtils.h"
+#include <queue>
+#include <list>
 
-class AStar
+#include "NodeElements.h"
+#include "../TGraph.h"
+
+struct AStar
 {
-public:
-    using SharedPtrNodeTile2D = std::shared_ptr<TNode<Tile2D>>;
+    using SharedPtrNodeTile2D = NodeSharedPtr<Tile2D>;
 
     AStar() = default;
 
@@ -30,7 +32,7 @@ public:
             /* Find node in openedList with lowest f */
             for (const auto& currNodeInList : openedList)
             {
-	            if (currNodeInList->GetContent().GetF() <= currentNode->GetContent().GetF()) {
+                if (currNodeInList->GetContent().GetF() <= currentNode->GetContent().GetF()) {
                     currentNode = currNodeInList;
                 }
             }
@@ -45,6 +47,7 @@ public:
                 if (std::ranges::find(closedList, neighbor) == closedList.end())
                 {
                     neighbor->GetContent().SetG(currentNode->GetContent().g + 10.0);
+
                     neighbor->GetContent().SetH(manhattan(neighbor->GetContent()._pos, goalNode->GetContent()._pos));
 
                     neighbor->SetIsVisitedByParent(currentNode);
@@ -56,28 +59,60 @@ public:
                     {
                         std::list<SharedPtrNodeTile2D> path;
                         auto current = neighbor;
-                        while (current != nullptr) {
+
+                        while (current != nullptr) 
+                        {
                             path.push_back(current);
                             current = current->GetParent();
                         }
-                        //path.reverse();
+                        
                         return path;
                     }
                 }
             }
         }
-
         return std::list<SharedPtrNodeTile2D> {};
     }
 
-    static sf::Vector2i getDelta(sf::Vector2i source_, sf::Vector2i target_)
+    static Vec2i getDelta(Vec2i source_, Vec2i target_)
     {
         return{ abs(source_.x - target_.x),  abs(source_.y - target_.y) };
     }
 
-    static double manhattan(sf::Vector2i source, sf::Vector2i target)
+    static double manhattan(Vec2i source, Vec2i target)
     {
         const auto delta = std::move(getDelta(source, target));
         return 10 * (delta.x + delta.y);
+    }
+};
+
+
+template<typename T>
+struct BFS
+{
+    template <typename Callable>
+    static void RunBFS(NodeSharedPtr<T> goalNode, std::queue<NodeSharedPtr<T>>& queueNodesToVisit, Callable& Functor)
+    {
+        if (!queueNodesToVisit.empty())
+        {
+            auto currentNode = queueNodesToVisit.front();
+            Functor.Visit(currentNode);
+
+            if (currentNode == goalNode)
+                return; // Found !
+
+            queueNodesToVisit.pop();
+
+            for (const auto& neighbor : currentNode->GetNeighbors())
+            {
+                if (!neighbor->IsVisitedByParent())
+                {
+                    neighbor->SetIsVisitedByParent(currentNode); // Put currentNode as parent ref of neighbor
+                    queueNodesToVisit.push(neighbor);
+                }
+            }
+
+            RunBFS(goalNode, queueNodesToVisit, Functor);
+        }
     }
 };
