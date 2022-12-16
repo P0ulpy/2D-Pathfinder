@@ -28,7 +28,6 @@ constexpr bool USE_DEF_MAP = false; // Set it to true to use the default map abo
 constexpr int FINAL_MAP_H = USE_DEF_MAP ? DEF_MAP_H : RAND_MAP_H;
 constexpr int FINAL_MAP_W = USE_DEF_MAP ? DEF_MAP_W : RAND_MAP_W;
 
-Tile2D tileMap2D[FINAL_MAP_H][FINAL_MAP_W]; // Used to construct a default graph easier
 void InitMap(GraphMap2D& g);
 
 int main()

@@ -8,7 +8,7 @@ set(GAME_SOURCES
         src/Game/main.cpp
 )
 
-add_executable(Game ${GAME_HEADERS} ${GAME_SOURCES} ${ENGINE_HEADERS} ${ENGINE_SOURCES})
+add_executable(Game ${GAME_HEADERS} ${GAME_SOURCES})
 
 include_directories(${CMAKE_SOURCE_DIR}/Engine)
 include_directories(${CMAKE_SOURCE_DIR}/PathfindingSystem)
