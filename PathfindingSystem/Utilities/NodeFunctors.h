@@ -1,20 +1,17 @@
 #pragma once
 
+struct FunctorEmpty
+{
+    template <typename T>
+    void Visit(NodeSharedPtr<T> pSharedNode) { }
+};
+
 struct FunctorLoggerNodes
 {
     template <typename T>
     void Visit(NodeSharedPtr<T> pSharedNode)
     {
-        NodeWeakPtr<T> pWeakNode(pSharedNode);
-
-        if (auto node = pWeakNode.lock())
-        {
-            std::cout << node->GetContent() << " ---> ";
-        }
-        else
-        {
-            std::cout << "null ---> ";
-        }
+    	std::cout << pSharedNode->GetContent() << " ---> ";
     }
 };
 
