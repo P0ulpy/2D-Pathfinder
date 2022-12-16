@@ -2,6 +2,7 @@
 
 #include <queue>
 #include <list>
+#include <iostream>
 
 #include "NodeElements.h"
 #include "../TGraph.h"
@@ -60,11 +61,6 @@ public:
 
         openedList.push_back(startingNode);
 
-        startingNode->ResetParent();
-        goalNode->ResetParent();
-
-        bool targetReached = false;
-
         while (!openedList.empty())
         {
             currentNode = *openedList.begin();
@@ -78,8 +74,20 @@ public:
             }
 
             /* if found goalNode, we break */
-            if (currentNode == goalNode) {
-                targetReached = true;
+            if (currentNode == goalNode) 
+            {
+                while (currentNode != nullptr)
+                {
+                    returnPath.push_back(currentNode);
+                    if (Parents.find(currentNode) == Parents.end())
+                        break;
+                    currentNode = Parents[currentNode];
+                }
+
+                openedList.clear();
+                closedList.clear();
+
+                std::reverse(returnPath.begin(), returnPath.end());
                 break;
             }
 
@@ -92,7 +100,8 @@ public:
             {
                 if (std::ranges::find(closedList, neighbor) == closedList.end())
                 {
-                    neighbor->GetContent().SetG(currentNode->GetContent().g + 10.0);
+                    //neighbor->GetContent().SetG(currentNode->GetContent().g + 1.0);
+                    neighbor->GetContent().SetG(1.0);
                     neighbor->GetContent().SetH(heuristic_compute(neighbor->GetContent()._pos, goalNode->GetContent()._pos));
 
                     //neighbor->SetIsVisitedByParent(currentNode);
@@ -103,19 +112,6 @@ public:
                 }
             }
         }
-
-        if (!targetReached) return returnPath;
-
-        while (currentNode != nullptr) {
-            if (currentNode != startingNode)
-                returnPath.push_back(currentNode);
-            if (Parents.find(currentNode) == Parents.end())
-                break;
-            currentNode = Parents[currentNode];
-        }
-
-        openedList.clear();
-        closedList.clear();
 
         return returnPath;
     }
@@ -151,3 +147,39 @@ struct BFS
         }
     }
 };
+
+
+namespace Utilities
+{
+    using NodeSharedPtrTile2D = NodeSharedPtr<Tile2D>;
+
+    template<int height, int width>
+    void displayPath(std::list<NodeSharedPtrTile2D> path, Tile2D map[height][width])
+    {
+        bool isFound = false;
+        for (int y = 0; y < height; ++y)
+        {
+            for (int x = 0; x < width; ++x)
+            {
+                isFound = false;
+                if (!map[y][x]._isTraversable)
+                {
+                    std::cout << " X ";
+                    continue;
+                }
+                for (auto& it : path)
+                {
+                    if (it->GetContent()._pos == Vec2i(x, y))
+                    {
+                        std::cout << " O "; // Just to see the map
+                        isFound = true;
+                        break;
+                    }
+                }
+                if (!isFound)
+                    std::cout << " . "; // Just to see the map
+            }
+            std::cout << std::endl;
+        }
+    }
+}

@@ -11,9 +11,6 @@ template<typename T>
 using NodeWeakPtr = std::weak_ptr<TNode<T>>;
 
 template<typename T>
-using NodePtr = TNode<T>*;
-
-template<typename T>
 class TGraph : public std::list<NodeSharedPtr<T>>
 {
 public:
@@ -71,7 +68,7 @@ public:
 
 	void ResetParentsForAllNodes()
 	{
-		std::for_each(this->begin(), this->end(), [](const auto& node)
+		std::for_each(this->begin(), this->end(), []( auto& node)
 		{
 			node->ResetParent();
 		});
@@ -80,7 +77,7 @@ public:
 	NodeSharedPtr<T> FindNode(const T& nodeContent)
 	{
 		// Find in the list if the node is contained
-		const auto it = std::find_if(this->begin(), this->end(), [&nodeContent](const auto& pNode)
+		 auto it = std::find_if(this->begin(), this->end(), [&nodeContent]( auto& pNode)
 		{
 			return pNode->GetContent() == nodeContent;
 		});
@@ -89,7 +86,7 @@ public:
 		return (*it);
 	}
 
-	NodeSharedPtr<T> FindNode(const TNode<T>& node)
+	NodeSharedPtr<T>* FindNode(const TNode<T>& node)
 	{
 		return FindNode(node.GetContent());
 	}
@@ -99,7 +96,7 @@ public:
 	{
 		Functor.Visit(currNode);
 
-		const auto& parentNode = currNode->GetParent();
+		 auto& parentNode = currNode->GetParent();
 		if (parentNode != nullptr && currNode != parentNode)
 		{
 			VisitParentsFrom(parentNode, Functor);

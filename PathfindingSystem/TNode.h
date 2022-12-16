@@ -6,19 +6,18 @@
 #include <cassert>  
 #include <algorithm>
 
-template<typename T>
+template<typename NodeType>
 class TNode
 {
 public:
-	template<typename P>
-	using NodeSharedPtr = std::shared_ptr<TNode<P>>;
+	using NodeSharedPtr = std::shared_ptr<TNode<NodeType>>;
 
-	TNode() : TNode(T()) { }
+	TNode() : TNode(NodeType()) { }
 
-	TNode(const T& content)
+	TNode(NodeType content)
 		: _content(content) { }
 
-	TNode(const TNode& node) : _content(node._content)
+	TNode(TNode& node) : _content(node._content)
 	{
 		for (auto& neighbor : node._neighbors)
 			_neighbors.push_back(neighbor);
@@ -29,26 +28,25 @@ public:
 		return *this;
 	}
 
-	TNode& operator=(const TNode& node)
+	TNode& operator=( TNode& node)
 	{
 		return *this;
 	}
 
 	~TNode() = default;
 
-	bool operator==(const TNode& node)
+	bool operator==( TNode& node)
 	{
 		return (_content == node._content && _neighbors.size() == node._neighbors.size());
 	}
 
-	bool operator!=(const TNode& node)
+	bool operator!=( TNode& node)
 	{
 		return !(*this == node);
 	}
 
-
 	template<typename...Args>
-	void AddNeighbors(NodeSharedPtr<T> pNode, Args ... args)
+	void AddNeighbors(NodeSharedPtr pNode, Args ... args)
 	{
 		if (IsAlreadyNeighbor(*pNode))
 			return;
@@ -60,12 +58,12 @@ public:
 			AddNeighbors(args...);
 	}
 
-	void RemoveNeighbor(NodeSharedPtr<T> neighborToRemove)
+	void RemoveNeighbor(NodeSharedPtr neighborToRemove)
 	{
 		_neighbors.remove_if([&neighborToRemove, this](const auto currNeighbor)
-			{
-				return neighborToRemove->_content == currNeighbor->_content && neighborToRemove->IsAlreadyNeighbor(*this);
-			});
+		{
+			return neighborToRemove->_content == currNeighbor->_content && neighborToRemove->IsAlreadyNeighbor(*this);
+		});
 	}
 
 	void ClearAllNeighbors()
@@ -73,22 +71,22 @@ public:
 		_neighbors.clear();
 	}
 
-	bool HasSameContent(const TNode& node) const
+	bool HasSameContent( TNode& node) 
 	{
 		return _content == node._content;
 	}
 
-	void SetContent(T content)
+	void SetContent(NodeType content)
 	{
 		_content = content;
 	}
 
-	T GetContent() const
+	NodeType GetContent() 
 	{
 		return _content;
 	}
 
-	const std::list<NodeSharedPtr<T>>& GetNeighbors() const
+	 std::list<NodeSharedPtr>& GetNeighbors() 
 	{
 		return _neighbors;
 	}
@@ -98,7 +96,7 @@ public:
 		return !_neighbors.empty();
 	}
 
-	void SetIsVisitedByParent(const std::shared_ptr<TNode<T>>& parent)
+	void SetIsVisitedByParent(const NodeSharedPtr& parent)
 	{
 		if (_parent == nullptr)
 		{
@@ -106,12 +104,12 @@ public:
 		}
 	}
 
-	bool IsVisitedByParent() const
+	bool IsVisitedByParent() 
 	{
 		return _parent != nullptr;
 	}
 
-	NodeSharedPtr<T> GetParent() const
+	NodeSharedPtr GetParent() 
 	{
 		return _parent;
 	}
@@ -123,18 +121,18 @@ public:
 
 private:
 
-	bool IsAlreadyNeighbor(const TNode& nodeNeighborToFind) const
+	bool IsAlreadyNeighbor( TNode& nodeNeighborToFind) 
 	{
-		const auto it = std::find_if(_neighbors.begin(), _neighbors.end(), [&nodeNeighborToFind](const auto pNeighbor)
-			{
-				return nodeNeighborToFind._content == pNeighbor->_content;
-			});
+		 auto it = std::find_if(_neighbors.begin(), _neighbors.end(), [&nodeNeighborToFind]( auto pNeighbor)
+		 {
+			return nodeNeighborToFind._content == pNeighbor->_content;
+		 });
 
 		return it != _neighbors.end();
 	}
 
-	T _content;
-	std::list<NodeSharedPtr<T>> _neighbors;
+	NodeType _content;
+	std::list<NodeSharedPtr> _neighbors;
 
-	NodeSharedPtr<T> _parent{ nullptr };
+	NodeSharedPtr _parent{ nullptr };
 };

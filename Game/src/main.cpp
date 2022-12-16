@@ -6,8 +6,8 @@
 
 #include "TGraph.h"
 
-constexpr int RAND_MAP_W = 50;
-constexpr int RAND_MAP_H = 50;
+constexpr int RAND_MAP_W = 10;
+constexpr int RAND_MAP_H = 10;
 
 constexpr int DEF_MAP_W = 12;
 constexpr int DEF_MAP_H = 7;
@@ -45,6 +45,9 @@ int main()
     const auto beginNode = g.GetGraph().FindNode(Tile2D(0,0));
     const auto endNode = g.GetGraph().FindNode(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));
 
+    /*const auto& beginNode = g.FindNode(Tile2D(0,0));
+    const auto& endNode = g.FindNode(Tile2D(FINAL_MAP_W - 1, FINAL_MAP_H - 1));*/
+
     using NodeSharedPtrTile2D = NodeSharedPtr<Tile2D>;
 
     const std::function<void(NodeSharedPtrTile2D)> testFunctionLoggerNode = [](const NodeSharedPtrTile2D& node)
@@ -63,7 +66,7 @@ int main()
 
 	auto queueNodesVisited = std::queue<NodeSharedPtrTile2D>();
     queueNodesVisited.push(beginNode);
-    queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
+    //queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
 
     const auto startTimerBFS = std::chrono::high_resolution_clock::now();
     BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, functorBFSAllNodesVisited);
@@ -76,6 +79,18 @@ int main()
     g.GetGraph().VisitParentsFrom(endNode, defaultLoggerNode);
 
     g.GetGraph().VisitParentsFrom(endNode, functorBFSFinalPathNodes);
+
+    /* add the path in a list for BFS result */
+    auto iterateNode = endNode;
+    std::list<NodeSharedPtrTile2D> bfsResult = {};
+    beginNode->ResetParent();
+
+    while (iterateNode != nullptr)
+    {
+        bfsResult.push_back(iterateNode);
+        iterateNode = iterateNode->GetParent();
+    }
+    std::reverse(bfsResult.begin(), bfsResult.end());
 
     /* reset Parents */
     g.GetGraph().ResetParentsForAllNodes();
@@ -113,6 +128,14 @@ int main()
     std::cout << "Duration timer AStar manhattan: " << durationTimerAStarManhattan << " ms. Node count in the path: " << static_cast<int>(aStarManhattanResult.size()) << std::endl;
     std::cout << "Duration timer AStar Euclidean: " << durationTimerAStarEuclidean << " ms. Node count in the path: " << static_cast<int>(aStarEuclideanResult.size()) << std::endl;
     std::cout << "Duration timer AStar Octagonal: " << durationTimerAStarOctagonal << " ms. Node count in the path: " << static_cast<int>(aStarOctagonalResult.size()) << std::endl;
+
+    std::cout << "Let's see the A* with manhattan heuristic path : " << std::endl;
+
+    Utilities::displayPath<FINAL_MAP_H, FINAL_MAP_W>(aStarManhattanResult, tileMap2D);
+
+    std::cout << "\nNow let's see the BFS path : " << std::endl;
+
+    Utilities::displayPath<FINAL_MAP_H, FINAL_MAP_W>(bfsResult, tileMap2D);
 
     return 0;
 }
