@@ -3,37 +3,25 @@
 //
 
 #include <SFML/Graphics.hpp>
-#include <chrono>
-#include <functional>
-#include "TGraph.h"
-#include "Utilities/NodeElements.h"
-#include "Utilities/Algo.h"
-#include "Utilities/NodeFunctors.h"
+#include "TilesRenderer.hpp"
+#include "PathfinderRunner.hpp"
+
+uint32_t GetPanelWidth(const sf::Vector2u& windowSize)
+{
+    return windowSize.x / 6;
+}
 
 sf::RenderWindow window(sf::VideoMode(1800, 900), "Pathfinder-2D", sf::Style::Close);
 
-sf::Vector2u mapSize { 50, 25 };
-uint32_t tilesSize = 0;
-uint32_t tilesBorderWidth = 5;
+const sf::Vector2u mapSize { 50, 30 };
 
-sf::RectangleShape tilesShape;
+TilesRenderer tilesRenderer(
+        &window,
+        mapSize,
+        GetPanelWidth(window.getSize())
+);
 
-unsigned int GetTilesSize(const sf::Vector2u& mapSize, const sf::Vector2u& windowSize)
-{
-    return (windowSize.x < windowSize.y) ? windowSize.y : windowSize.x / mapSize.x;
-}
-
-void InitShape()
-{
-    tilesSize = GetTilesSize(mapSize, window.getSize());
-    tilesBorderWidth = 5;
-
-    tilesShape.setFillColor(sf::Color(101, 72,  50));
-    tilesShape.setSize({
-        (float)tilesSize - (float)tilesBorderWidth,
-        (float)tilesSize - (float)tilesBorderWidth
-    });
-}
+PathfinderRunner pathfinderRunner;
 
 void ProcessEvents()
 {
@@ -45,166 +33,89 @@ void ProcessEvents()
             case sf::Event::Closed:
                 window.close();
                 break;
-            case sf::Event::Resized:
-                InitShape();
-                break;
-            case sf::Event::KeyPressed:
+            case sf::Event::MouseButtonPressed:
 
-                switch (event.key.code)
+                sf::Vector2f mousePos = { (float)event.mouseButton.x, (float)event.mouseButton.y };
+                mousePos.x -= (float)GetPanelWidth(window.getSize());
+
+                auto tilesSize = tilesRenderer.GetTilesSize();
+                sf::Vector2f posInGraph = { mousePos.x / tilesSize, mousePos.y / tilesSize };
+
+                if(posInGraph.x < 0 || posInGraph.x >= mapSize.x ||
+                    posInGraph.y < 0 || posInGraph.y >= mapSize.y)
+                break;
+
+                switch (event.mouseButton.button)
                 {
-                    case sf::Keyboard::A:
+                    case sf::Mouse::Button::Left:
+                        pathfinderRunner.GetGraphMap()->AddWallAt(Tile2D((int)posInGraph.x, (int)posInGraph.y));
                         break;
-                    case sf::Keyboard::Z:
+                    case sf::Mouse::Right:
+
+                        if(pathfinderRunner.portal1.x == -1 || pathfinderRunner.portal1.y == -1)
+                        {
+                            pathfinderRunner.portal1 = { (int)posInGraph.x, (int)posInGraph.y };
+                            pathfinderRunner.portals.push_back(pathfinderRunner.portal1);
+                        }
+                        else if(pathfinderRunner.portal2.x == -1 || pathfinderRunner.portal2.y == -1)
+                        {
+                            pathfinderRunner.portal2 = { (int)posInGraph.x, (int)posInGraph.y };
+                            pathfinderRunner.portals.push_back(pathfinderRunner.portal2);
+
+                            pathfinderRunner.GetGraphMap()->AddPortal(Tile2D(pathfinderRunner.portal1.x, pathfinderRunner.portal1.y), Tile2D(pathfinderRunner.portal1.x, pathfinderRunner.portal1.y));
+
+                            pathfinderRunner.portal1 = { -1, -1 };
+                            pathfinderRunner.portal2 = { -1, -1 };
+                        }
+
                         break;
-                    case sf::Keyboard::E:
-                        break;
-                    case sf::Keyboard::R:
+                    case sf::Mouse::Middle:
                         break;
                 }
 
                 break;
-            case sf::Event::MouseButtonPressed:
-                break;
         }
-    }
-}
-
-GraphMap2D graphMap(mapSize.x, mapSize.y);
-
-void SetTileAt(float x, float y)
-{
-    sf::Vector2f position {
-            (float)x * (float)tilesSize,
-            (float)y * (float)tilesSize
-    };
-
-    position += { (float)tilesBorderWidth / 2, (float)tilesBorderWidth / 2 };
-
-    tilesShape.setPosition(position);
-}
-
-void RenderTiles()
-{
-    for(uint32_t x = 0; x < mapSize.x; ++x)
-    {
-        for(uint32_t y = 0; y < mapSize.y; y++)
-        {
-            SetTileAt((float)x, (float)y);
-
-            if(graphMap.IsTileAWall(Tile2D(x, y)))
-            {
-                tilesShape.setFillColor(sf::Color(113, 113,  113));
-            }
-            else if(false)
-            {
-                // Portal
-                tilesShape.setFillColor(sf::Color(129, 172,  255));
-            }
-            else
-            {
-                tilesShape.setFillColor(sf::Color(73, 117, 55));
-            }
-
-            window.draw(tilesShape);
-        }
-    }
-}
-
-void RenderVisited(const std::list<std::shared_ptr<TNode<Tile2D>>>& list)
-{
-    for(auto& visitedTile : list)
-    {
-        auto pos = visitedTile->GetContent()._pos;
-        SetTileAt(pos.x, pos.y);
-
-        tilesShape.setFillColor(sf::Color::Magenta);
-
-        window.draw(tilesShape);
-    }
-}
-
-void RenderPath(const std::list<std::shared_ptr<TNode<Tile2D>>>& list)
-{
-    for(auto& visitedTile : list)
-    {
-        auto pos = visitedTile->GetContent()._pos;
-        SetTileAt(pos.x, pos.y);
-
-        tilesShape.setFillColor(sf::Color::Red);
-
-        window.draw(tilesShape);
     }
 }
 
 int main()
 {
-    InitShape();
+    pathfinderRunner.Reset(mapSize);
 
-    graphMap.SetRandomWallsForMap(7);
-
-    graphMap.RemoveWallAt(Tile2D(0, 0));
-    graphMap.RemoveWallAt(Tile2D(mapSize.x - 1, mapSize.y - 1));
-
-    // =========== Init Pathfinder
-    const auto beginNode = graphMap.GetGraph().FindNode(Tile2D(0,0));
-    const auto endNode = graphMap.GetGraph().FindNode(Tile2D(mapSize.x - 1, mapSize.y - 1));
-
-    // =========== Init functors to visit nodes if needed
-    using NodeSharedPtrTile2D = NodeSharedPtr<Tile2D>;
-
-    const std::function<void(NodeSharedPtrTile2D)> functionStringLoggerNode = [](const NodeSharedPtrTile2D& node)
-    {
-        std::cout << node->GetContent() << " -> ";
-    };
-
-    FunctorVisitedList<Tile2D> functorBFSFinalPathNodes;
-    FunctorVisitedList<Tile2D> functorBFSVisited;
-
-    FunctorVisitedList<Tile2D> functorAStarManhattanVisited;
-    FunctorVisitedList<Tile2D> functorAStarEuclideanVisited;
-
-    FunctorCustomLoggerNodes customLoggerNode(functionStringLoggerNode);
-
-    // =========== Init BFS
-    auto queueNodesVisited = std::queue<NodeSharedPtrTile2D>();
-    queueNodesVisited.push(beginNode);
-    queueNodesVisited.back()->SetIsVisitedByParent(queueNodesVisited.back());
-
-    // =========== Run BFS
-    const auto startTimerBFS = std::chrono::high_resolution_clock::now();
-    //BFS<Tile2D>::RunBFS(endNode, queueNodesVisited, functorBFSVisited);
-    const auto endTimerBFS = std::chrono::high_resolution_clock::now();
-
-    graphMap.GetGraph().VisitParentsFrom(endNode, functorBFSFinalPathNodes);
-    std::ranges::reverse(functorBFSFinalPathNodes._listVisited);
-
-    graphMap.GetGraph().ResetParentsForAllNodes();
-
-    // =========== Run AStar manhattan
-    const auto startTimerAStarManhattan = std::chrono::high_resolution_clock::now();
-    const auto aStarManhattanResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::manhattan)>(beginNode, endNode, Heuristic::manhattan, functorAStarManhattanVisited);
-    const auto endTimerAStarManhattan = std::chrono::high_resolution_clock::now();
-
-    // =========== Run AStar euclidean
-    graphMap.GetGraph().ResetParentsForAllNodes();
-
-    const auto startTimerAStarEuclidean = std::chrono::high_resolution_clock::now();
-    const auto aStarEuclideanResult = AStar<Tile2D>::RunAStar<decltype(Heuristic::euclidean)>(beginNode, endNode, Heuristic::euclidean, functorAStarEuclideanVisited);
-    const auto endTimerAStarEuclidean = std::chrono::high_resolution_clock::now();
+    PathfinderRunner::PathfinderResults pathfinderResults;
 
     while (window.isOpen())
     {
         ProcessEvents();
 
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        {
+            pathfinderResults = pathfinderRunner.RunAStarEuclidean();
+        }
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+        {
+            pathfinderResults = pathfinderRunner.RunAStarManhattan();
+        }
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+        {
+            pathfinderRunner.InitBFS();
+            pathfinderResults = pathfinderRunner.RunBFS();
+        }
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+        {
+            pathfinderRunner.Reset(mapSize);
+            pathfinderResults = {};
+        }
+
+        // Render
+
         window.clear(sf::Color(101, 72,  50));
 
-        RenderTiles();
+        tilesRenderer.RenderTiles(*pathfinderRunner.GetGraphMap());
+        tilesRenderer.RenderPortals(pathfinderRunner.portals);
 
-        RenderVisited(functorAStarEuclideanVisited._listVisited);
-        //RenderVisited(functorAStarManhattanVisited._listVisited);
-
-        RenderPath(aStarEuclideanResult);
-        //RenderPath(aStarManhattanResult);
+        tilesRenderer.RenderVisited(pathfinderResults.visitedList);
+        tilesRenderer.RenderPath(pathfinderResults.pathList);
 
         window.display();
     }

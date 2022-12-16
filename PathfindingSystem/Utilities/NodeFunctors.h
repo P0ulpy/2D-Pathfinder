@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 struct FunctorEmpty
 {
     template <typename T>

@@ -4,10 +4,8 @@
 
 #include "../../Engine/Engine/Engine.hpp"
 #include "../../Engine/Engine/AssetLoader/AssetLoader.hpp"
-#include "../../Engine/Engine/Core/RTTI/RTTI.hpp"
 
 #include <SFML/Graphics.hpp>
-#include <PathfindingSystem/PathfindingSystem.hpp>
 
 class App : public Engine::EngineApplication
 {
@@ -113,11 +111,6 @@ PathfinderLayer pathfinderLayer;
 
 int main()
 {
-    SpriteRenderer a;
-    PathFindingManager b;
-    SpriteRenderer c;
-    Transform t;
-
     app.PushLayer(&pathfinderLayer);
     app.Run();
 }
